@@ -1,0 +1,113 @@
+{
+ "title": "Régression linéaire sur logP seul",
+ "hypothesis": "La lipophilie (logP de Crippen) explique à elle seule une grande partie de la solubilité : plus une molécule est lipophile, moins elle est soluble.",
+ "justification": "Equation générale de solubilité (Ran & Yalkowsky 2001) : log S dépend de logP et du point de fusion ; Delaney 2004 : logP est le descripteur le plus important d'ESOL.",
+ "config": {
+  "features": [
+   "logp"
+  ],
+  "model": "linear",
+  "params": {}
+ },
+ "config_hash": "dc47149cef",
+ "compared_to": "E01",
+ "timestamp": "2026-11-04 01:08 UTC",
+ "git_commit": "b5ccddf",
+ "environment": {
+  "python": "3.12.3",
+  "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+  "numpy": "2.3.5",
+  "pandas": "2.3.3",
+  "scikit-learn": "1.7.2",
+  "rdkit": "2025.09.3"
+ },
+ "change": "features: [] → ['logp'] ; model: mean → linear",
+ "status": "done",
+ "seconds": 0.02853863700011061,
+ "n_features": 1,
+ "per_seed": {
+  "random|0": {
+   "mae": 0.8912662649033293,
+   "rmse": 1.101908052674776,
+   "r2": 0.7626469294316573
+  },
+  "random|1": {
+   "mae": 1.066601085949495,
+   "rmse": 1.4473253294393904,
+   "r2": 0.5641119623256599
+  },
+  "random|2": {
+   "mae": 0.8764955248075595,
+   "rmse": 1.1111235019099615,
+   "r2": 0.6942173699501015
+  },
+  "random|3": {
+   "mae": 0.9004710881047542,
+   "rmse": 1.1266695118234396,
+   "r2": 0.7142210077333435
+  },
+  "random|4": {
+   "mae": 0.8836735590312921,
+   "rmse": 1.2589834240787114,
+   "r2": 0.59274992197994
+  },
+  "scaffold|0": {
+   "mae": 0.9235790970199615,
+   "rmse": 1.164174867821002,
+   "r2": 0.6618023102555893
+  },
+  "scaffold|1": {
+   "mae": 1.1054422883747645,
+   "rmse": 1.3954518104273925,
+   "r2": 0.6632507835718049
+  },
+  "scaffold|2": {
+   "mae": 1.0888960267570191,
+   "rmse": 1.3925133416939908,
+   "r2": 0.5004517262663186
+  },
+  "scaffold|3": {
+   "mae": 1.3492606318176215,
+   "rmse": 1.7180623986636785,
+   "r2": 0.41422301144457896
+  },
+  "scaffold|4": {
+   "mae": 1.042720253399069,
+   "rmse": 1.3376400115120597,
+   "r2": 0.6164986324914795
+  }
+ },
+ "summary": {
+  "random": {
+   "mae_mean": 0.923701504559286,
+   "mae_std": 0.08037821273392397,
+   "rmse_mean": 1.2092019639852558,
+   "rmse_std": 0.14758379376767475,
+   "r2_mean": 0.6655894382841404,
+   "r2_std": 0.08397621369880254
+  },
+  "scaffold": {
+   "mae_mean": 1.101979659473687,
+   "mae_std": 0.1554585864623236,
+   "rmse_mean": 1.4015684860236248,
+   "rmse_std": 0.20045597142146857,
+   "r2_mean": 0.5712452928059543,
+   "r2_std": 0.10997860519262917
+  }
+ },
+ "tuned_params": {},
+ "delta_rmse_mean": -0.8626485051503108,
+ "delta_rmse_std": 0.20766185997396946,
+ "win_fraction": 1.0,
+ "decision": "keep",
+ "per_split": {
+  "random": {
+   "delta_rmse_mean": -0.9136773791162195,
+   "win_fraction": 1.0
+  },
+  "scaffold": {
+   "delta_rmse_mean": -0.8116196311844022,
+   "win_fraction": 1.0
+  }
+ }
+}

@@ -1,0 +1,117 @@
+{
+ "title": "Premier Random Forest (mêmes 4 descripteurs)",
+ "hypothesis": "Un modèle non linéaire (forêt aléatoire) capture des interactions entre descripteurs que la régression linéaire ne voit pas.",
+ "justification": "Breiman 2001 ; usage standard en QSPR (ex. Palmer & Mitchell 2014).",
+ "config": {
+  "features": [
+   "esol4"
+  ],
+  "model": "random_forest",
+  "params": {
+   "n_estimators": 500,
+   "min_samples_leaf": 1,
+   "max_features": 1.0
+  }
+ },
+ "config_hash": "63fc1cdfc5",
+ "compared_to": "E03",
+ "timestamp": "2026-11-04 01:08 UTC",
+ "git_commit": "b5ccddf",
+ "environment": {
+  "python": "3.12.3",
+  "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+  "numpy": "2.3.5",
+  "pandas": "2.3.3",
+  "scikit-learn": "1.7.2",
+  "rdkit": "2025.09.3"
+ },
+ "change": "model: linear → random_forest ; params: {} → {'n_estimators': 500, 'min_samples_leaf': 1, 'max_features': 1.0}",
+ "status": "done",
+ "seconds": 8.253111767000064,
+ "n_features": 4,
+ "per_seed": {
+  "random|0": {
+   "mae": 0.5140100491062991,
+   "rmse": 0.6448055778159434,
+   "r2": 0.9187241141045024
+  },
+  "random|1": {
+   "mae": 0.5993712403640891,
+   "rmse": 0.8413814596425284,
+   "r2": 0.8526912647283984
+  },
+  "random|2": {
+   "mae": 0.605371541285468,
+   "rmse": 0.819593594126483,
+   "r2": 0.833626077796011
+  },
+  "random|3": {
+   "mae": 0.4713764143719149,
+   "rmse": 0.63112326916518,
+   "r2": 0.9103261943189987
+  },
+  "random|4": {
+   "mae": 0.5471193965779951,
+   "rmse": 0.7496621196835055,
+   "r2": 0.8556049568151438
+  },
+  "scaffold|0": {
+   "mae": 0.734621626189577,
+   "rmse": 0.9618390890646662,
+   "r2": 0.7691451286798169
+  },
+  "scaffold|1": {
+   "mae": 0.6805959454213949,
+   "rmse": 0.8742825471629003,
+   "r2": 0.8678155024070212
+  },
+  "scaffold|2": {
+   "mae": 0.7201117504774337,
+   "rmse": 0.8904958279310903,
+   "r2": 0.7957121625886041
+  },
+  "scaffold|3": {
+   "mae": 0.8121619565175775,
+   "rmse": 1.049250314542244,
+   "r2": 0.7815195120166417
+  },
+  "scaffold|4": {
+   "mae": 0.7118067989561001,
+   "rmse": 0.8928779963375147,
+   "r2": 0.8291273101068615
+  }
+ },
+ "summary": {
+  "random": {
+   "mae_mean": 0.5474497283411532,
+   "mae_std": 0.056912762606839896,
+   "rmse_mean": 0.7373132040867281,
+   "rmse_std": 0.09693647831548721,
+   "r2_mean": 0.8741945215526108,
+   "r2_std": 0.03788846456952214
+  },
+  "scaffold": {
+   "mae_mean": 0.7318596155124166,
+   "mae_std": 0.04905146870842009,
+   "rmse_mean": 0.9337491550076832,
+   "rmse_std": 0.07281336005836382,
+   "r2_mean": 0.8086639231597891,
+   "r2_std": 0.039949849211664744
+  }
+ },
+ "tuned_params": {},
+ "delta_rmse_mean": -0.2558243602242374,
+ "delta_rmse_std": 0.09088358718078485,
+ "win_fraction": 1.0,
+ "decision": "keep",
+ "per_split": {
+  "random": {
+   "delta_rmse_mean": -0.27243366144152625,
+   "win_fraction": 1.0
+  },
+  "scaffold": {
+   "delta_rmse_mean": -0.23921505900694845,
+   "win_fraction": 1.0
+  }
+ }
+}

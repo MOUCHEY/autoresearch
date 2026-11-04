@@ -1,0 +1,1866 @@
+{
+ "mission_id": "M1-solubilite-ESOL",
+ "champion": "E05",
+ "experiments": {
+  "E01": {
+   "title": "Référence naïve : prédire la moyenne",
+   "hypothesis": "Sans aucune information structurale, l'erreur est égale à la dispersion des données (≈ écart-type). Toute méthode utile doit faire mieux.",
+   "justification": "Principe méthodologique : un modèle doit battre la référence triviale.",
+   "config": {
+    "features": [],
+    "model": "mean",
+    "params": {}
+   },
+   "config_hash": "e3a233f448",
+   "compared_to": null,
+   "timestamp": "2026-11-04 01:08 UTC",
+   "git_commit": "b5ccddf",
+   "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "rdkit": "2025.09.3"
+   },
+   "change": "configuration de départ",
+   "status": "done",
+   "seconds": 0.007987953000110792,
+   "n_features": 0,
+   "per_seed": {
+    "random|0": {
+     "mae": 1.772407073740407,
+     "rmse": 2.2631868970721856,
+     "r2": -0.0012556523930828956
+    },
+    "random|1": {
+     "mae": 1.7413097137541587,
+     "rmse": 2.193209133885388,
+     "r2": -0.0009277201353194986
+    },
+    "random|2": {
+     "mae": 1.5752172677728233,
+     "rmse": 2.0142682123526403,
+     "r2": -0.004899760136119813
+    },
+    "random|3": {
+     "mae": 1.7341038816594374,
+     "rmse": 2.1294601592787457,
+     "r2": -0.020883663569779776
+    },
+    "random|4": {
+     "mae": 1.5966001456001455,
+     "rmse": 2.014272312918417,
+     "r2": -0.04245548371058927
+    },
+    "scaffold|0": {
+     "mae": 1.791180908180908,
+     "rmse": 2.2110811897501157,
+     "r2": -0.21995434297978367
+    },
+    "scaffold|1": {
+     "mae": 1.9483153962042845,
+     "rmse": 2.452384717345164,
+     "r2": -0.04004973822891511
+    },
+    "scaffold|2": {
+     "mae": 1.603296751296751,
+     "rmse": 1.9939723415370694,
+     "r2": -0.024275990200155473
+    },
+    "scaffold|3": {
+     "mae": 1.7488209724876391,
+     "rmse": 2.2474985230372035,
+     "r2": -0.0024281893982733838
+    },
+    "scaffold|4": {
+     "mae": 1.7903895006117232,
+     "rmse": 2.1610038143705816,
+     "r2": -0.0009202644750805344
+    }
+   },
+   "summary": {
+    "random": {
+     "mae_mean": 1.6839276165053942,
+     "mae_std": 0.09094366954101614,
+     "rmse_mean": 2.1228793431014754,
+     "rmse_std": 0.10984951188129605,
+     "r2_mean": -0.014084455988978251,
+     "r2_std": 0.017840830807741074
+    },
+    "scaffold": {
+     "mae_mean": 1.7764007057562612,
+     "mae_std": 0.12318119001469939,
+     "rmse_mean": 2.213188117208027,
+     "rmse_std": 0.16520851549957324,
+     "r2_mean": -0.05752570505644163,
+     "r2_std": 0.09224143253891576
+    }
+   },
+   "tuned_params": {},
+   "decision": "reference"
+  },
+  "E02": {
+   "title": "Régression linéaire sur logP seul",
+   "hypothesis": "La lipophilie (logP de Crippen) explique à elle seule une grande partie de la solubilité : plus une molécule est lipophile, moins elle est soluble.",
+   "justification": "Equation générale de solubilité (Ran & Yalkowsky 2001) : log S dépend de logP et du point de fusion ; Delaney 2004 : logP est le descripteur le plus important d'ESOL.",
+   "config": {
+    "features": [
+     "logp"
+    ],
+    "model": "linear",
+    "params": {}
+   },
+   "config_hash": "dc47149cef",
+   "compared_to": "E01",
+   "timestamp": "2026-11-04 01:08 UTC",
+   "git_commit": "b5ccddf",
+   "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "rdkit": "2025.09.3"
+   },
+   "change": "features: [] → ['logp'] ; model: mean → linear",
+   "status": "done",
+   "seconds": 0.02853863700011061,
+   "n_features": 1,
+   "per_seed": {
+    "random|0": {
+     "mae": 0.8912662649033293,
+     "rmse": 1.101908052674776,
+     "r2": 0.7626469294316573
+    },
+    "random|1": {
+     "mae": 1.066601085949495,
+     "rmse": 1.4473253294393904,
+     "r2": 0.5641119623256599
+    },
+    "random|2": {
+     "mae": 0.8764955248075595,
+     "rmse": 1.1111235019099615,
+     "r2": 0.6942173699501015
+    },
+    "random|3": {
+     "mae": 0.9004710881047542,
+     "rmse": 1.1266695118234396,
+     "r2": 0.7142210077333435
+    },
+    "random|4": {
+     "mae": 0.8836735590312921,
+     "rmse": 1.2589834240787114,
+     "r2": 0.59274992197994
+    },
+    "scaffold|0": {
+     "mae": 0.9235790970199615,
+     "rmse": 1.164174867821002,
+     "r2": 0.6618023102555893
+    },
+    "scaffold|1": {
+     "mae": 1.1054422883747645,
+     "rmse": 1.3954518104273925,
+     "r2": 0.6632507835718049
+    },
+    "scaffold|2": {
+     "mae": 1.0888960267570191,
+     "rmse": 1.3925133416939908,
+     "r2": 0.5004517262663186
+    },
+    "scaffold|3": {
+     "mae": 1.3492606318176215,
+     "rmse": 1.7180623986636785,
+     "r2": 0.41422301144457896
+    },
+    "scaffold|4": {
+     "mae": 1.042720253399069,
+     "rmse": 1.3376400115120597,
+     "r2": 0.6164986324914795
+    }
+   },
+   "summary": {
+    "random": {
+     "mae_mean": 0.923701504559286,
+     "mae_std": 0.08037821273392397,
+     "rmse_mean": 1.2092019639852558,
+     "rmse_std": 0.14758379376767475,
+     "r2_mean": 0.6655894382841404,
+     "r2_std": 0.08397621369880254
+    },
+    "scaffold": {
+     "mae_mean": 1.101979659473687,
+     "mae_std": 0.1554585864623236,
+     "rmse_mean": 1.4015684860236248,
+     "rmse_std": 0.20045597142146857,
+     "r2_mean": 0.5712452928059543,
+     "r2_std": 0.10997860519262917
+    }
+   },
+   "tuned_params": {},
+   "delta_rmse_mean": -0.8626485051503108,
+   "delta_rmse_std": 0.20766185997396946,
+   "win_fraction": 1.0,
+   "decision": "keep",
+   "per_split": {
+    "random": {
+     "delta_rmse_mean": -0.9136773791162195,
+     "win_fraction": 1.0
+    },
+    "scaffold": {
+     "delta_rmse_mean": -0.8116196311844022,
+     "win_fraction": 1.0
+    }
+   }
+  },
+  "E03": {
+   "title": "Reproduction de la forme ESOL (4 descripteurs, linéaire)",
+   "hypothesis": "Ajouter la masse molaire, les liaisons rotatives et la proportion aromatique (les 4 descripteurs d'ESOL) améliore la régression linéaire.",
+   "justification": "Delaney 2004 : équation ESOL à 4 descripteurs.",
+   "config": {
+    "features": [
+     "esol4"
+    ],
+    "model": "linear",
+    "params": {}
+   },
+   "config_hash": "adf6770f4d",
+   "compared_to": "E02",
+   "timestamp": "2026-11-04 01:08 UTC",
+   "git_commit": "b5ccddf",
+   "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "rdkit": "2025.09.3"
+   },
+   "change": "features: ['logp'] → ['esol4']",
+   "status": "done",
+   "seconds": 0.030079080999939833,
+   "n_features": 4,
+   "per_seed": {
+    "random|0": {
+     "mae": 0.7417821890921381,
+     "rmse": 0.9115691482391406,
+     "r2": 0.8375635920609922
+    },
+    "random|1": {
+     "mae": 0.9096824063084199,
+     "rmse": 1.1744992023491436,
+     "r2": 0.7129562616307314
+    },
+    "random|2": {
+     "mae": 0.7390789251810451,
+     "rmse": 0.9803685279756528,
+     "r2": 0.7619507232326683
+    },
+    "random|3": {
+     "mae": 0.7828174922773152,
+     "rmse": 0.994569774184584,
+     "r2": 0.7773064036184457
+    },
+    "random|4": {
+     "mae": 0.7446385373359649,
+     "rmse": 0.9877276748927508,
+     "r2": 0.7493339043873332
+    },
+    "scaffold|0": {
+     "mae": 0.8216458952762931,
+     "rmse": 1.0469963967662324,
+     "r2": 0.7264576512316572
+    },
+    "scaffold|1": {
+     "mae": 0.9525961106358415,
+     "rmse": 1.245377715692815,
+     "r2": 0.7317874546451459
+    },
+    "scaffold|2": {
+     "mae": 0.8918688545487403,
+     "rmse": 1.097897498651786,
+     "r2": 0.6894708860621572
+    },
+    "scaffold|3": {
+     "mae": 1.062378120259861,
+     "rmse": 1.3496449785691942,
+     "r2": 0.6385122976094135
+    },
+    "scaffold|4": {
+     "mae": 0.8484903306248565,
+     "rmse": 1.1249044803931303,
+     "r2": 0.7287812511767779
+    }
+   },
+   "summary": {
+    "random": {
+     "mae_mean": 0.7835999100389766,
+     "mae_std": 0.07270872795596611,
+     "rmse_mean": 1.0097468655282544,
+     "rmse_std": 0.09792914815734927,
+     "r2_mean": 0.7678221769860342,
+     "r2_std": 0.045662825120960156
+    },
+    "scaffold": {
+     "mae_mean": 0.9153958622691185,
+     "mae_std": 0.09592519117864062,
+     "rmse_mean": 1.1729642140146317,
+     "rmse_std": 0.12275223880070713,
+     "r2_mean": 0.7030019081450304,
+     "r2_std": 0.039954200417000624
+    }
+   },
+   "tuned_params": {},
+   "delta_rmse_mean": -0.21402968523299726,
+   "delta_rmse_std": 0.08481492433191075,
+   "win_fraction": 1.0,
+   "decision": "keep",
+   "per_split": {
+    "random": {
+     "delta_rmse_mean": -0.1994550984570014,
+     "win_fraction": 1.0
+    },
+    "scaffold": {
+     "delta_rmse_mean": -0.22860427200899314,
+     "win_fraction": 1.0
+    }
+   }
+  },
+  "E04": {
+   "title": "Premier Random Forest (mêmes 4 descripteurs)",
+   "hypothesis": "Un modèle non linéaire (forêt aléatoire) capture des interactions entre descripteurs que la régression linéaire ne voit pas.",
+   "justification": "Breiman 2001 ; usage standard en QSPR (ex. Palmer & Mitchell 2014).",
+   "config": {
+    "features": [
+     "esol4"
+    ],
+    "model": "random_forest",
+    "params": {
+     "n_estimators": 500,
+     "min_samples_leaf": 1,
+     "max_features": 1.0
+    }
+   },
+   "config_hash": "63fc1cdfc5",
+   "compared_to": "E03",
+   "timestamp": "2026-11-04 01:08 UTC",
+   "git_commit": "b5ccddf",
+   "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "rdkit": "2025.09.3"
+   },
+   "change": "model: linear → random_forest ; params: {} → {'n_estimators': 500, 'min_samples_leaf': 1, 'max_features': 1.0}",
+   "status": "done",
+   "seconds": 8.253111767000064,
+   "n_features": 4,
+   "per_seed": {
+    "random|0": {
+     "mae": 0.5140100491062991,
+     "rmse": 0.6448055778159434,
+     "r2": 0.9187241141045024
+    },
+    "random|1": {
+     "mae": 0.5993712403640891,
+     "rmse": 0.8413814596425284,
+     "r2": 0.8526912647283984
+    },
+    "random|2": {
+     "mae": 0.605371541285468,
+     "rmse": 0.819593594126483,
+     "r2": 0.833626077796011
+    },
+    "random|3": {
+     "mae": 0.4713764143719149,
+     "rmse": 0.63112326916518,
+     "r2": 0.9103261943189987
+    },
+    "random|4": {
+     "mae": 0.5471193965779951,
+     "rmse": 0.7496621196835055,
+     "r2": 0.8556049568151438
+    },
+    "scaffold|0": {
+     "mae": 0.734621626189577,
+     "rmse": 0.9618390890646662,
+     "r2": 0.7691451286798169
+    },
+    "scaffold|1": {
+     "mae": 0.6805959454213949,
+     "rmse": 0.8742825471629003,
+     "r2": 0.8678155024070212
+    },
+    "scaffold|2": {
+     "mae": 0.7201117504774337,
+     "rmse": 0.8904958279310903,
+     "r2": 0.7957121625886041
+    },
+    "scaffold|3": {
+     "mae": 0.8121619565175775,
+     "rmse": 1.049250314542244,
+     "r2": 0.7815195120166417
+    },
+    "scaffold|4": {
+     "mae": 0.7118067989561001,
+     "rmse": 0.8928779963375147,
+     "r2": 0.8291273101068615
+    }
+   },
+   "summary": {
+    "random": {
+     "mae_mean": 0.5474497283411532,
+     "mae_std": 0.056912762606839896,
+     "rmse_mean": 0.7373132040867281,
+     "rmse_std": 0.09693647831548721,
+     "r2_mean": 0.8741945215526108,
+     "r2_std": 0.03788846456952214
+    },
+    "scaffold": {
+     "mae_mean": 0.7318596155124166,
+     "mae_std": 0.04905146870842009,
+     "rmse_mean": 0.9337491550076832,
+     "rmse_std": 0.07281336005836382,
+     "r2_mean": 0.8086639231597891,
+     "r2_std": 0.039949849211664744
+    }
+   },
+   "tuned_params": {},
+   "delta_rmse_mean": -0.2558243602242374,
+   "delta_rmse_std": 0.09088358718078485,
+   "win_fraction": 1.0,
+   "decision": "keep",
+   "per_split": {
+    "random": {
+     "delta_rmse_mean": -0.27243366144152625,
+     "win_fraction": 1.0
+    },
+    "scaffold": {
+     "delta_rmse_mean": -0.23921505900694845,
+     "win_fraction": 1.0
+    }
+   }
+  },
+  "E05": {
+   "title": "Descripteurs physico-chimiques étendus (19 descripteurs)",
+   "hypothesis": "Ajouter polarité (TPSA), liaisons hydrogène, cycles, halogènes, etc. fournit une information complémentaire au logP.",
+   "justification": "Delaney 2004 testait 9 propriétés ; la solubilité dépend aussi des interactions polaires.",
+   "config": {
+    "features": [
+     "physchem"
+    ],
+    "model": "random_forest",
+    "params": {
+     "n_estimators": 500,
+     "min_samples_leaf": 1,
+     "max_features": 1.0
+    }
+   },
+   "config_hash": "5944cf91dd",
+   "compared_to": "E04",
+   "timestamp": "2026-11-04 01:08 UTC",
+   "git_commit": "b5ccddf",
+   "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "rdkit": "2025.09.3"
+   },
+   "change": "features: ['esol4'] → ['physchem']",
+   "status": "done",
+   "seconds": 11.18786573400007,
+   "n_features": 19,
+   "per_seed": {
+    "random|0": {
+     "mae": 0.47592878841508907,
+     "rmse": 0.6186092435555977,
+     "r2": 0.9251939107643271
+    },
+    "random|1": {
+     "mae": 0.5726619312626309,
+     "rmse": 0.8299634159067589,
+     "r2": 0.8566622694322854
+    },
+    "random|2": {
+     "mae": 0.531825219506547,
+     "rmse": 0.7197750780098711,
+     "r2": 0.8716837216613793
+    },
+    "random|3": {
+     "mae": 0.44686208821718804,
+     "rmse": 0.6080494854515615,
+     "r2": 0.9167632592427778
+    },
+    "random|4": {
+     "mae": 0.5092328326677328,
+     "rmse": 0.6946971321371743,
+     "r2": 0.8760027184968369
+    },
+    "scaffold|0": {
+     "mae": 0.6795625048455547,
+     "rmse": 0.8757293883356325,
+     "r2": 0.8086299165877306
+    },
+    "scaffold|1": {
+     "mae": 0.6619412282659272,
+     "rmse": 0.88344751660056,
+     "r2": 0.865029637139576
+    },
+    "scaffold|2": {
+     "mae": 0.623310790701091,
+     "rmse": 0.7658532824283424,
+     "r2": 0.8488981126414307
+    },
+    "scaffold|3": {
+     "mae": 0.7502666574064689,
+     "rmse": 0.9611150318108082,
+     "r2": 0.8166819705106644
+    },
+    "scaffold|4": {
+     "mae": 0.6694736053911071,
+     "rmse": 0.8765874861519378,
+     "r2": 0.8353055560969146
+    }
+   },
+   "summary": {
+    "random": {
+     "mae_mean": 0.5073021720138376,
+     "mae_std": 0.048770632469065454,
+     "rmse_mean": 0.6942188710121927,
+     "rmse_std": 0.0897523101241224,
+     "r2_mean": 0.8892611759195214,
+     "r2_std": 0.029979027319678938
+    },
+    "scaffold": {
+     "mae_mean": 0.6769109573220298,
+     "mae_std": 0.04620734328193307,
+     "rmse_mean": 0.872546541065456,
+     "rmse_std": 0.06959367789725895,
+     "r2_mean": 0.8349090385952632,
+     "r2_std": 0.023053850762471958
+    }
+   },
+   "tuned_params": {},
+   "delta_rmse_mean": -0.052148473508381164,
+   "delta_rmse_std": 0.04497792350764982,
+   "win_fraction": 0.9,
+   "decision": "keep",
+   "per_split": {
+    "random": {
+     "delta_rmse_mean": -0.04309433307453538,
+     "win_fraction": 1.0
+    },
+    "scaffold": {
+     "delta_rmse_mean": -0.061202613942226945,
+     "win_fraction": 0.8
+    }
+   }
+  },
+  "E06": {
+   "title": "Empreintes de Morgan seules (ECFP4, 2048 bits) à la place des descripteurs",
+   "hypothesis": "La présence/absence de sous-structures suffit à prédire la solubilité. (Prédiction a priori : moins bon, car la solubilité est une propriété globale et additive mal décrite par des bits binaires.)",
+   "justification": "Rogers & Hahn 2010 (ECFP) ; MoleculeNet (Wu et al. 2018) l'utilise comme représentation de référence.",
+   "config": {
+    "features": [
+     "morgan2_2048"
+    ],
+    "model": "random_forest",
+    "params": {
+     "n_estimators": 500,
+     "min_samples_leaf": 1,
+     "max_features": 1.0
+    }
+   },
+   "config_hash": "c657cb921b",
+   "compared_to": "E05",
+   "timestamp": "2026-11-04 01:10 UTC",
+   "git_commit": "b5ccddf+modifs",
+   "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "rdkit": "2025.09.3"
+   },
+   "change": "features: ['physchem'] → ['morgan2_2048']",
+   "status": "done",
+   "seconds": 66.80914693700015,
+   "n_features": 2048,
+   "per_seed": {
+    "random|0": {
+     "mae": 0.9560988735701236,
+     "rmse": 1.244940668236274,
+     "r2": 0.6970287288480361
+    },
+    "random|1": {
+     "mae": 0.841586038125354,
+     "rmse": 1.1116296645535055,
+     "r2": 0.7428640018869676
+    },
+    "random|2": {
+     "mae": 0.9598444278425279,
+     "rmse": 1.27204839506937,
+     "r2": 0.5992298075585047
+    },
+    "random|3": {
+     "mae": 0.8843743062075285,
+     "rmse": 1.2370169116904655,
+     "r2": 0.6555005839923524
+    },
+    "random|4": {
+     "mae": 0.9433945335335344,
+     "rmse": 1.1878753893562886,
+     "r2": 0.637454164288731
+    },
+    "scaffold|0": {
+     "mae": 1.2370706592137608,
+     "rmse": 1.5857422055186214,
+     "r2": 0.37252075073055835
+    },
+    "scaffold|1": {
+     "mae": 1.4553542978978975,
+     "rmse": 1.8864578724366745,
+     "r2": 0.3845806754082157
+    },
+    "scaffold|2": {
+     "mae": 1.0774095580866576,
+     "rmse": 1.3501963345644499,
+     "r2": 0.5303518865338588
+    },
+    "scaffold|3": {
+     "mae": 1.154336355633656,
+     "rmse": 1.5445153428742815,
+     "r2": 0.526588400605638
+    },
+    "scaffold|4": {
+     "mae": 1.2601675688116707,
+     "rmse": 1.6087024554070528,
+     "r2": 0.4453233748641686
+    }
+   },
+   "summary": {
+    "random": {
+     "mae_mean": 0.9170596358558137,
+     "mae_std": 0.05199211976577107,
+     "rmse_mean": 1.2107022057811805,
+     "rmse_std": 0.06317539665876354,
+     "r2_mean": 0.6664154573149184,
+     "r2_std": 0.05534743636279105
+    },
+    "scaffold": {
+     "mae_mean": 1.2368676879287286,
+     "mae_std": 0.14187815226934344,
+     "rmse_mean": 1.595122842160216,
+     "rmse_std": 0.19215788769456943,
+     "r2_mean": 0.45187301762848786,
+     "r2_std": 0.07518188066575496
+    }
+   },
+   "tuned_params": {},
+   "delta_rmse_mean": 0.6195298179318739,
+   "delta_rmse_std": 0.1841613536838927,
+   "win_fraction": 0.0,
+   "decision": "reject",
+   "per_split": {
+    "random": {
+     "delta_rmse_mean": 0.516483334768988,
+     "win_fraction": 0.0
+    },
+    "scaffold": {
+     "delta_rmse_mean": 0.7225763010947599,
+     "win_fraction": 0.0
+    }
+   }
+  },
+  "E07": {
+   "title": "Descripteurs + empreintes de Morgan combinés",
+   "hypothesis": "Les empreintes apportent une information locale (groupes fonctionnels) complémentaire aux descripteurs globaux.",
+   "justification": "Résultat attendu de E05/E06 ; combinaison fréquente en QSAR.",
+   "config": {
+    "features": [
+     "physchem",
+     "morgan2_2048"
+    ],
+    "model": "random_forest",
+    "params": {
+     "n_estimators": 500,
+     "min_samples_leaf": 1,
+     "max_features": 1.0
+    }
+   },
+   "config_hash": "afe53710ff",
+   "compared_to": "E05",
+   "timestamp": "2026-11-04 01:10 UTC",
+   "git_commit": "b5ccddf+modifs",
+   "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "rdkit": "2025.09.3"
+   },
+   "change": "features: ['physchem'] → ['physchem', 'morgan2_2048']",
+   "status": "done",
+   "seconds": 49.366784715999984,
+   "n_features": 2067,
+   "per_seed": {
+    "random|0": {
+     "mae": 0.46883695495495403,
+     "rmse": 0.6005505990206277,
+     "r2": 0.9294976895385011
+    },
+    "random|1": {
+     "mae": 0.540332486486486,
+     "rmse": 0.778093989591475,
+     "r2": 0.8740185082887175
+    },
+    "random|2": {
+     "mae": 0.5098279819819831,
+     "rmse": 0.6955414175964205,
+     "r2": 0.880178669776336
+    },
+    "random|3": {
+     "mae": 0.4440550810810815,
+     "rmse": 0.5979628407789817,
+     "r2": 0.9195019038928544
+    },
+    "random|4": {
+     "mae": 0.5125438918918923,
+     "rmse": 0.6918712585827664,
+     "r2": 0.8770094535083302
+    },
+    "scaffold|0": {
+     "mae": 0.70115854054054,
+     "rmse": 0.8986097789169005,
+     "r2": 0.7984993375137169
+    },
+    "scaffold|1": {
+     "mae": 0.6636614774774763,
+     "rmse": 0.8697732890231569,
+     "r2": 0.8691755133087695
+    },
+    "scaffold|2": {
+     "mae": 0.6378053873873867,
+     "rmse": 0.7897925748608056,
+     "r2": 0.8393040891050632
+    },
+    "scaffold|3": {
+     "mae": 0.7601116756756744,
+     "rmse": 0.9668281548838853,
+     "r2": 0.8144961109646024
+    },
+    "scaffold|4": {
+     "mae": 0.6783962522522531,
+     "rmse": 0.8942880165078948,
+     "r2": 0.8285872045604773
+    }
+   },
+   "summary": {
+    "random": {
+     "mae_mean": 0.4951192792792794,
+     "mae_std": 0.03828351497502487,
+     "rmse_mean": 0.6728040211140544,
+     "rmse_std": 0.07547894654077149,
+     "r2_mean": 0.8960412450009478,
+     "r2_std": 0.026308589420605256
+    },
+    "scaffold": {
+     "mae_mean": 0.6882266666666661,
+     "mae_std": 0.04630625998105944,
+     "rmse_mean": 0.8838583628385287,
+     "rmse_std": 0.06375172569484751,
+     "r2_mean": 0.830012451090526,
+     "r2_std": 0.026720518544663556
+    }
+   },
+   "tuned_params": {},
+   "delta_rmse_mean": -0.005051514062532991,
+   "delta_rmse_std": 0.023776518271174527,
+   "win_fraction": 0.6,
+   "decision": "reject",
+   "per_split": {
+    "random": {
+     "delta_rmse_mean": -0.02141484989813842,
+     "win_fraction": 1.0
+    },
+    "scaffold": {
+     "delta_rmse_mean": 0.011311821773072439,
+     "win_fraction": 0.2
+    }
+   }
+  },
+  "E08": {
+   "title": "Ensemble complet des descripteurs RDKit 2D (~217)",
+   "hypothesis": "Un ensemble large de descripteurs contient des informations utiles absentes de notre sélection manuelle.",
+   "justification": "Pratique courante (ex. AqSolDB fournit des descripteurs 2D ; Yang et al. 2019 utilisent des descripteurs RDKit).",
+   "config": {
+    "features": [
+     "rdkit_all"
+    ],
+    "model": "random_forest",
+    "params": {
+     "n_estimators": 500,
+     "min_samples_leaf": 1,
+     "max_features": 1.0
+    }
+   },
+   "config_hash": "b55177d1d1",
+   "compared_to": "E05",
+   "timestamp": "2026-11-04 01:12 UTC",
+   "git_commit": "b5ccddf+modifs",
+   "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "rdkit": "2025.09.3"
+   },
+   "change": "features: ['physchem'] → ['rdkit_all']",
+   "status": "done",
+   "seconds": 63.494004313999994,
+   "n_features": 217,
+   "per_seed": {
+    "random|0": {
+     "mae": 0.47638688288288294,
+     "rmse": 0.6225069537325131,
+     "r2": 0.9242482701266806
+    },
+    "random|1": {
+     "mae": 0.5533462342342343,
+     "rmse": 0.7669801008852022,
+     "r2": 0.8775917136629743
+    },
+    "random|2": {
+     "mae": 0.5049931171171186,
+     "rmse": 0.6896938231108523,
+     "r2": 0.8821849376730463
+    },
+    "random|3": {
+     "mae": 0.42344902702702697,
+     "rmse": 0.5786509325165785,
+     "r2": 0.9246175010048213
+    },
+    "random|4": {
+     "mae": 0.48432718918918993,
+     "rmse": 0.6747395969268508,
+     "r2": 0.8830248672924442
+    },
+    "scaffold|0": {
+     "mae": 0.7442055675675686,
+     "rmse": 0.9336553458272606,
+     "r2": 0.7824759032658795
+    },
+    "scaffold|1": {
+     "mae": 0.6576858018018019,
+     "rmse": 0.8743162393282841,
+     "r2": 0.8678053142412339
+    },
+    "scaffold|2": {
+     "mae": 0.6336185405405401,
+     "rmse": 0.7993525422266544,
+     "r2": 0.8353902884608124
+    },
+    "scaffold|3": {
+     "mae": 0.7584219279279274,
+     "rmse": 0.9573732270157729,
+     "r2": 0.8181065763293043
+    },
+    "scaffold|4": {
+     "mae": 0.6842913873873882,
+     "rmse": 0.9224865534622744,
+     "r2": 0.8176068583547613
+    }
+   },
+   "summary": {
+    "random": {
+     "mae_mean": 0.4885004900900906,
+     "mae_std": 0.047097839776590364,
+     "rmse_mean": 0.6665142814343993,
+     "rmse_std": 0.07133537134500323,
+     "r2_mean": 0.8983334579519934,
+     "r2_std": 0.0239153508263233
+    },
+    "scaffold": {
+     "mae_mean": 0.6956446450450452,
+     "mae_std": 0.054120602182084934,
+     "rmse_mean": 0.8974367815720493,
+     "rmse_std": 0.06262333918456456,
+     "r2_mean": 0.8242769881303982,
+     "r2_std": 0.031016592040047117
+    }
+   },
+   "tuned_params": {},
+   "delta_rmse_mean": -0.0014071745356001087,
+   "delta_rmse_std": 0.037729256850908395,
+   "win_fraction": 0.6,
+   "decision": "reject",
+   "per_split": {
+    "random": {
+     "delta_rmse_mean": -0.027704589577793315,
+     "win_fraction": 0.8
+    },
+    "scaffold": {
+     "delta_rmse_mean": 0.0248902405065931,
+     "win_fraction": 0.4
+    }
+   }
+  },
+  "E09": {
+   "title": "Réglage des hyperparamètres de la forêt (validation croisée interne)",
+   "hypothesis": "Limiter la profondeur effective des arbres (min_samples_leaf) et le nombre de variables par division (max_features) réduit le surapprentissage.",
+   "justification": "Le réglage est fait UNIQUEMENT par validation croisée interne sur l'ensemble d'entraînement (groupée par échafaudage pour le split scaffold).",
+   "config": {
+    "features": [
+     "physchem"
+    ],
+    "model": "random_forest_tuned",
+    "params": {
+     "n_estimators": 300,
+     "grid": {
+      "min_samples_leaf": [
+       1,
+       3
+      ],
+      "max_features": [
+       0.33,
+       1.0
+      ]
+     },
+     "inner_folds": 3
+    }
+   },
+   "config_hash": "94ef6b091a",
+   "compared_to": "E05",
+   "timestamp": "2026-11-04 01:13 UTC",
+   "git_commit": "b5ccddf+modifs",
+   "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "rdkit": "2025.09.3"
+   },
+   "change": "model: random_forest → random_forest_tuned ; params: {'n_estimators': 500, 'min_samples_leaf': 1, 'max_features': 1.0} → {'n_estimators': 300, 'grid': {'min_samples_leaf': [1, 3], 'max_features': [0.33, 1.0]}, 'inner_folds': 3}",
+   "status": "done",
+   "seconds": 66.10725191799997,
+   "n_features": 19,
+   "per_seed": {
+    "random|0": {
+     "mae": 0.4847516736422569,
+     "rmse": 0.6322016587788888,
+     "r2": 0.921870435646578
+    },
+    "random|1": {
+     "mae": 0.5418936265605431,
+     "rmse": 0.7690312803336112,
+     "r2": 0.8769361109903733
+    },
+    "random|2": {
+     "mae": 0.5309860278062457,
+     "rmse": 0.7441941626452736,
+     "r2": 0.8628295186289382
+    },
+    "random|3": {
+     "mae": 0.444482666763751,
+     "rmse": 0.600758573356153,
+     "r2": 0.9187474180298673
+    },
+    "random|4": {
+     "mae": 0.5127598962349798,
+     "rmse": 0.6800633368315787,
+     "r2": 0.8811717022048327
+    },
+    "scaffold|0": {
+     "mae": 0.6741258452413456,
+     "rmse": 0.852059798346829,
+     "r2": 0.8188349794489785
+    },
+    "scaffold|1": {
+     "mae": 0.6644751993688661,
+     "rmse": 0.8831189798821812,
+     "r2": 0.8651300041091303
+    },
+    "scaffold|2": {
+     "mae": 0.5829019320001827,
+     "rmse": 0.730483413312556,
+     "r2": 0.8625326847204036
+    },
+    "scaffold|3": {
+     "mae": 0.7417805469387132,
+     "rmse": 0.9195509704411737,
+     "r2": 0.8321945525765378
+    },
+    "scaffold|4": {
+     "mae": 0.6788294637733928,
+     "rmse": 0.8850619930945642,
+     "r2": 0.8321057596289129
+    }
+   },
+   "summary": {
+    "random": {
+     "mae_mean": 0.5029747782015553,
+     "mae_std": 0.03920607107695772,
+     "rmse_mean": 0.685249802389101,
+     "rmse_std": 0.07154290041915944,
+     "r2_mean": 0.8923110371001179,
+     "r2_std": 0.026468251478172958
+    },
+    "scaffold": {
+     "mae_mean": 0.6684225974645001,
+     "mae_std": 0.05668241531952738,
+     "rmse_mean": 0.8540550310154608,
+     "rmse_std": 0.0730920456641381,
+     "r2_mean": 0.8421595960967926,
+     "r2_std": 0.020537294406577148
+    }
+   },
+   "tuned_params": {
+    "random|0": {
+     "max_features": 0.33,
+     "min_samples_leaf": 1
+    },
+    "random|1": {
+     "max_features": 0.33,
+     "min_samples_leaf": 1
+    },
+    "random|2": {
+     "max_features": 0.33,
+     "min_samples_leaf": 3
+    },
+    "random|3": {
+     "max_features": 0.33,
+     "min_samples_leaf": 1
+    },
+    "random|4": {
+     "max_features": 0.33,
+     "min_samples_leaf": 1
+    },
+    "scaffold|0": {
+     "max_features": 0.33,
+     "min_samples_leaf": 1
+    },
+    "scaffold|1": {
+     "max_features": 1.0,
+     "min_samples_leaf": 3
+    },
+    "scaffold|2": {
+     "max_features": 0.33,
+     "min_samples_leaf": 1
+    },
+    "scaffold|3": {
+     "max_features": 0.33,
+     "min_samples_leaf": 1
+    },
+    "scaffold|4": {
+     "max_features": 1.0,
+     "min_samples_leaf": 3
+    }
+   },
+   "delta_rmse_mean": -0.013730289336543477,
+   "delta_rmse_std": 0.02684656203202733,
+   "win_fraction": 0.7,
+   "decision": "reject",
+   "per_split": {
+    "random": {
+     "delta_rmse_mean": -0.008969068623091613,
+     "win_fraction": 0.6
+    },
+    "scaffold": {
+     "delta_rmse_mean": -0.01849151004999534,
+     "win_fraction": 0.8
+    }
+   }
+  },
+  "E10": {
+   "title": "Gradient boosting (HistGradientBoosting) à la place de la forêt",
+   "hypothesis": "Le boosting, qui corrige séquentiellement les erreurs, est plus précis que la forêt aléatoire sur des données tabulaires de cette taille.",
+   "justification": "Algorithme alternatif courant ; XGBoost figure parmi les références de MoleculeNet.",
+   "config": {
+    "features": [
+     "physchem"
+    ],
+    "model": "hist_gradient_boosting",
+    "params": {
+     "max_iter": 500,
+     "learning_rate": 0.05,
+     "min_samples_leaf": 10
+    }
+   },
+   "config_hash": "18e607747a",
+   "compared_to": "E05",
+   "timestamp": "2026-11-04 01:13 UTC",
+   "git_commit": "b5ccddf+modifs",
+   "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "rdkit": "2025.09.3"
+   },
+   "change": "model: random_forest → hist_gradient_boosting ; params: {'n_estimators': 500, 'min_samples_leaf': 1, 'max_features': 1.0} → {'max_iter': 500, 'learning_rate': 0.05, 'min_samples_leaf': 10}",
+   "status": "done",
+   "seconds": 10.664013725000132,
+   "n_features": 19,
+   "per_seed": {
+    "random|0": {
+     "mae": 0.522301932361439,
+     "rmse": 0.7139206127703092,
+     "r2": 0.9003668219570933
+    },
+    "random|1": {
+     "mae": 0.5469722871069074,
+     "rmse": 0.8154814041467608,
+     "r2": 0.8616208211103862
+    },
+    "random|2": {
+     "mae": 0.5303285868798531,
+     "rmse": 0.7470847117054722,
+     "r2": 0.8617618724380982
+    },
+    "random|3": {
+     "mae": 0.4162047838968495,
+     "rmse": 0.573387802864067,
+     "r2": 0.9259825503980949
+    },
+    "random|4": {
+     "mae": 0.5233586585792015,
+     "rmse": 0.7436172062882384,
+     "r2": 0.8579242320329798
+    },
+    "scaffold|0": {
+     "mae": 0.661714419703006,
+     "rmse": 0.8805802187436121,
+     "r2": 0.8065039748133713
+    },
+    "scaffold|1": {
+     "mae": 0.678903651745364,
+     "rmse": 0.8897691506596208,
+     "r2": 0.8630911270583317
+    },
+    "scaffold|2": {
+     "mae": 0.6331296258985819,
+     "rmse": 0.8070153377549192,
+     "r2": 0.8322191808379221
+    },
+    "scaffold|3": {
+     "mae": 0.7841770934367372,
+     "rmse": 0.993234605171731,
+     "r2": 0.8042245974215275
+    },
+    "scaffold|4": {
+     "mae": 0.5946107101914095,
+     "rmse": 0.7961594833970372,
+     "r2": 0.8641409541531349
+    }
+   },
+   "summary": {
+    "random": {
+     "mae_mean": 0.5078332497648501,
+     "mae_std": 0.052163352289316844,
+     "rmse_mean": 0.7186983475549695,
+     "rmse_std": 0.08934718291801758,
+     "r2_mean": 0.8815312595873305,
+     "r2_std": 0.030311885635343823
+    },
+    "scaffold": {
+     "mae_mean": 0.6705071001950198,
+     "mae_std": 0.07110910327114472,
+     "rmse_mean": 0.873351759145384,
+     "rmse_std": 0.07914045485997333,
+     "r2_mean": 0.8340359668568574,
+     "r2_std": 0.029157081641400868
+    }
+   },
+   "tuned_params": {},
+   "delta_rmse_mean": 0.012642347311352364,
+   "delta_rmse_std": 0.04864183993422713,
+   "win_fraction": 0.3,
+   "decision": "reject",
+   "per_split": {
+    "random": {
+     "delta_rmse_mean": 0.024479476542776823,
+     "win_fraction": 0.4
+    },
+    "scaffold": {
+     "delta_rmse_mean": 0.0008052180799279051,
+     "win_fraction": 0.2
+    }
+   }
+  }
+ },
+ "order": [
+  "E01",
+  "E02",
+  "E03",
+  "E04",
+  "E05",
+  "E06",
+  "E07",
+  "E08",
+  "E09",
+  "E10"
+ ],
+ "total_seconds": 275.94878478200053,
+ "test_evaluations": [
+  {
+   "timestamp": "2026-11-04 01:13 UTC",
+   "champion": "E05",
+   "models": [
+    "E01",
+    "E02",
+    "E03",
+    "E04",
+    "E05"
+   ],
+   "git_commit": "b5ccddf+modifs"
+  }
+ ],
+ "literature": {
+  "valid": {
+   "per_seed": {
+    "random|0": {
+     "mae": 0.6776396396396396,
+     "rmse": 0.8471210917833083,
+     "r2": 0.8597202023559594
+    },
+    "random|1": {
+     "mae": 0.7799099099099098,
+     "rmse": 0.9907038538968778,
+     "r2": 0.7957649245979346
+    },
+    "random|2": {
+     "mae": 0.7101711711711711,
+     "rmse": 0.8990163844221414,
+     "r2": 0.7998187679348183
+    },
+    "random|3": {
+     "mae": 0.7175315315315317,
+     "rmse": 0.9242644409241095,
+     "r2": 0.807677672799977
+    },
+    "random|4": {
+     "mae": 0.6750360360360362,
+     "rmse": 0.852147985498522,
+     "r2": 0.8134259688246988
+    },
+    "scaffold|0": {
+     "mae": 0.8164234234234233,
+     "rmse": 1.0150412630852825,
+     "r2": 0.7429002867133241
+    },
+    "scaffold|1": {
+     "mae": 0.9185495495495496,
+     "rmse": 1.2225910714249173,
+     "r2": 0.7415126188328209
+    },
+    "scaffold|2": {
+     "mae": 0.7752432432432432,
+     "rmse": 0.964483019806723,
+     "r2": 0.7603552578097521
+    },
+    "scaffold|3": {
+     "mae": 1.010927927927928,
+     "rmse": 1.2848435421980091,
+     "r2": 0.6723916721441696
+    },
+    "scaffold|4": {
+     "mae": 0.7894144144144143,
+     "rmse": 1.081994941787647,
+     "r2": 0.7490779216487746
+    }
+   },
+   "summary": {
+    "random": {
+     "mae_mean": 0.7120576576576577,
+     "mae_std": 0.042404748242199135,
+     "rmse_mean": 0.9026507513049917,
+     "rmse_std": 0.058880772579733405,
+     "r2_mean": 0.8152815073026776,
+     "r2_std": 0.025768450911219463
+    },
+    "scaffold": {
+     "mae_mean": 0.8621117117117117,
+     "mae_std": 0.10031194256396445,
+     "rmse_mean": 1.1137907676605157,
+     "rmse_std": 0.13615414108847748,
+     "r2_mean": 0.7332475514297684,
+     "r2_std": 0.03482223803731238
+    }
+   }
+  }
+ },
+ "final": {
+  "champion": "E05",
+  "models": {
+   "E01": {
+    "per_seed": {
+     "random|0": {
+      "mae": 1.63125,
+      "rmse": 2.0399985327013046,
+      "r2": -0.0018795987911053302
+     },
+     "random|1": {
+      "mae": 1.677376863876864,
+      "rmse": 2.0227239257169294,
+      "r2": -0.00916036340551174
+     },
+     "random|2": {
+      "mae": 1.7083912838704507,
+      "rmse": 2.1053303653979745,
+      "r2": -0.00012526018027614327
+     },
+     "random|3": {
+      "mae": 1.5657893618726955,
+      "rmse": 1.9425684849042395,
+      "r2": -0.011286760600972112
+     },
+     "random|4": {
+      "mae": 1.6851792027417025,
+      "rmse": 2.040798909444077,
+      "r2": -0.023679702958177895
+     },
+     "scaffold|0": {
+      "mae": 1.869265782828283,
+      "rmse": 2.3518390424408464,
+      "r2": -0.019969797452249027
+     },
+     "scaffold|1": {
+      "mae": 1.6637058381433383,
+      "rmse": 2.1363814716623852,
+      "r2": -0.07937440525143069
+     },
+     "scaffold|2": {
+      "mae": 1.874440355940356,
+      "rmse": 2.3748976314188366,
+      "r2": -0.4573404229117064
+     },
+     "scaffold|3": {
+      "mae": 1.6514640752765752,
+      "rmse": 2.0718065210762817,
+      "r2": -0.018488360505037882
+     },
+     "scaffold|4": {
+      "mae": 1.7055524891774891,
+      "rmse": 2.1648335230604334,
+      "r2": -0.23916505535866772
+     }
+    },
+    "summary": {
+     "random": {
+      "mae_mean": 1.6535973424723427,
+      "mae_std": 0.05651305318863276,
+      "rmse_mean": 2.030284043632905,
+      "rmse_std": 0.05828391445617472,
+      "r2_mean": -0.009226337187208644,
+      "r2_std": 0.009353524028944597
+     },
+     "scaffold": {
+      "mae_mean": 1.7528857082732086,
+      "mae_std": 0.11045325326691008,
+      "rmse_mean": 2.2199516379317563,
+      "rmse_std": 0.1354358734708271,
+      "r2_mean": -0.16286760829581834,
+      "r2_std": 0.18759784478188904
+     }
+    }
+   },
+   "E02": {
+    "per_seed": {
+     "random|0": {
+      "mae": 0.9224661830721915,
+      "rmse": 1.1223974857779724,
+      "r2": 0.6967162136252505
+     },
+     "random|1": {
+      "mae": 0.8436495767242046,
+      "rmse": 1.1026627238514857,
+      "r2": 0.7001028435445056
+     },
+     "random|2": {
+      "mae": 0.9279662610901652,
+      "rmse": 1.2519404776867944,
+      "r2": 0.6463438211995115
+     },
+     "random|3": {
+      "mae": 0.9260102032674418,
+      "rmse": 1.1193481276106119,
+      "r2": 0.6642221851715403
+     },
+     "random|4": {
+      "mae": 0.9051864540125215,
+      "rmse": 1.209643760000746,
+      "r2": 0.6403511762636254
+     },
+     "scaffold|0": {
+      "mae": 1.3635566847210931,
+      "rmse": 1.617388878369508,
+      "r2": 0.5176069686028796
+     },
+     "scaffold|1": {
+      "mae": 1.0491028207306912,
+      "rmse": 1.449045622382812,
+      "r2": 0.5034321151541601
+     },
+     "scaffold|2": {
+      "mae": 0.973281677305639,
+      "rmse": 1.2836255081601542,
+      "r2": 0.5742566234813872
+     },
+     "scaffold|3": {
+      "mae": 0.9360127301730756,
+      "rmse": 1.2344137471371741,
+      "r2": 0.6384409987574442
+     },
+     "scaffold|4": {
+      "mae": 0.9805340626582052,
+      "rmse": 1.3970802805321738,
+      "r2": 0.48391305379680094
+     }
+    },
+    "summary": {
+     "random": {
+      "mae_mean": 0.905055735633305,
+      "mae_std": 0.03548886800753904,
+      "rmse_mean": 1.161198514985522,
+      "rmse_std": 0.06569714452346248,
+      "r2_mean": 0.6695472479608867,
+      "r2_std": 0.02779821498978692
+     },
+     "scaffold": {
+      "mae_mean": 1.0604975951177409,
+      "mae_std": 0.17426410783495444,
+      "rmse_mean": 1.3963108073163646,
+      "rmse_std": 0.15047067907925624,
+      "r2_mean": 0.5435299519585344,
+      "r2_std": 0.06282166679620262
+     }
+    }
+   },
+   "E03": {
+    "per_seed": {
+     "random|0": {
+      "mae": 0.7512204566676627,
+      "rmse": 0.9350616712048198,
+      "r2": 0.7895076417458954
+     },
+     "random|1": {
+      "mae": 0.7551851063033708,
+      "rmse": 1.0046241684154502,
+      "r2": 0.7510602751961428
+     },
+     "random|2": {
+      "mae": 0.7326005019828078,
+      "rmse": 0.9657354545360565,
+      "r2": 0.7895590570740765
+     },
+     "random|3": {
+      "mae": 0.7987669333353183,
+      "rmse": 1.024434492783754,
+      "r2": 0.7187516198829962
+     },
+     "random|4": {
+      "mae": 0.781697309020373,
+      "rmse": 0.9997922208487826,
+      "r2": 0.7543124373519967
+     },
+     "scaffold|0": {
+      "mae": 1.0299820978396732,
+      "rmse": 1.2928299742141485,
+      "r2": 0.691784166148709
+     },
+     "scaffold|1": {
+      "mae": 0.8829249711159485,
+      "rmse": 1.134798228631821,
+      "r2": 0.6954547652273209
+     },
+     "scaffold|2": {
+      "mae": 0.8303933576861434,
+      "rmse": 1.0307751503330054,
+      "r2": 0.7254641256907608
+     },
+     "scaffold|3": {
+      "mae": 0.7871003376665288,
+      "rmse": 1.0012874071691227,
+      "r2": 0.7621105472523846
+     },
+     "scaffold|4": {
+      "mae": 0.8479531960006812,
+      "rmse": 1.0568623808997872,
+      "r2": 0.7046635653809876
+     }
+    },
+    "summary": {
+     "random": {
+      "mae_mean": 0.7638940614619065,
+      "mae_std": 0.02621462301671244,
+      "rmse_mean": 0.9859296015577727,
+      "rmse_std": 0.03542469337995699,
+      "r2_mean": 0.7606382062502215,
+      "r2_std": 0.029816514514376117
+     },
+     "scaffold": {
+      "mae_mean": 0.875670792061795,
+      "mae_std": 0.09290807122023359,
+      "rmse_mean": 1.1033106282495768,
+      "rmse_std": 0.11697929768847433,
+      "r2_mean": 0.7158954339400326,
+      "r2_std": 0.028951362677555454
+     }
+    }
+   },
+   "E04": {
+    "per_seed": {
+     "random|0": {
+      "mae": 0.5461095646211414,
+      "rmse": 0.7305135414959233,
+      "r2": 0.8715268523205963
+     },
+     "random|1": {
+      "mae": 0.5033931632760589,
+      "rmse": 0.7364153565505968,
+      "r2": 0.8662380368456546
+     },
+     "random|2": {
+      "mae": 0.5194980761101503,
+      "rmse": 0.7196088532549383,
+      "r2": 0.8831558743211952
+     },
+     "random|3": {
+      "mae": 0.5119202736116558,
+      "rmse": 0.6830278419272784,
+      "r2": 0.874974540844731
+     },
+     "random|4": {
+      "mae": 0.5434838369123935,
+      "rmse": 0.74812800684163,
+      "r2": 0.8624326118565846
+     },
+     "scaffold|0": {
+      "mae": 0.8500426062912289,
+      "rmse": 1.066217779078178,
+      "r2": 0.7903649189885316
+     },
+     "scaffold|1": {
+      "mae": 0.6967757403539411,
+      "rmse": 0.972798237746963,
+      "r2": 0.7762000112112852
+     },
+     "scaffold|2": {
+      "mae": 0.6272768345724054,
+      "rmse": 0.8287441467394814,
+      "r2": 0.8225352217459604
+     },
+     "scaffold|3": {
+      "mae": 0.684364279519784,
+      "rmse": 0.963495807905799,
+      "r2": 0.7797289928142945
+     },
+     "scaffold|4": {
+      "mae": 0.62006117787183,
+      "rmse": 0.7727003693183568,
+      "r2": 0.8421289896347918
+     }
+    },
+    "summary": {
+     "random": {
+      "mae_mean": 0.52488098290628,
+      "mae_std": 0.019074858598780057,
+      "rmse_mean": 0.7235387200140734,
+      "rmse_std": 0.02487802256004774,
+      "r2_mean": 0.8716655832377522,
+      "r2_std": 0.008026538112072983
+     },
+     "scaffold": {
+      "mae_mean": 0.6957041277218379,
+      "mae_std": 0.09267450672617908,
+      "rmse_mean": 0.9207912681577557,
+      "rmse_std": 0.11840698834938357,
+      "r2_mean": 0.8021916268789727,
+      "r2_std": 0.028848136116863127
+     }
+    }
+   },
+   "E05": {
+    "per_seed": {
+     "random|0": {
+      "mae": 0.5312773394723326,
+      "rmse": 0.6885460473392137,
+      "r2": 0.8858642223622832
+     },
+     "random|1": {
+      "mae": 0.45735146790967046,
+      "rmse": 0.6437830880099933,
+      "r2": 0.897772888693367
+     },
+     "random|2": {
+      "mae": 0.4331147718473008,
+      "rmse": 0.5799713291935562,
+      "r2": 0.9241025932510613
+     },
+     "random|3": {
+      "mae": 0.46850718799915325,
+      "rmse": 0.6547098366580154,
+      "r2": 0.885126626234696
+     },
+     "random|4": {
+      "mae": 0.47868938600987393,
+      "rmse": 0.6631693382507344,
+      "r2": 0.891903273599263
+     },
+     "scaffold|0": {
+      "mae": 0.8476703990289973,
+      "rmse": 1.0589271606857718,
+      "r2": 0.7932220163666457
+     },
+     "scaffold|1": {
+      "mae": 0.6424777872114006,
+      "rmse": 0.8618430106010828,
+      "r2": 0.8243408253302256
+     },
+     "scaffold|2": {
+      "mae": 0.6290055660048424,
+      "rmse": 0.8130957771421476,
+      "r2": 0.8291737396320905
+     },
+     "scaffold|3": {
+      "mae": 0.6132728307127377,
+      "rmse": 0.8749892213051386,
+      "r2": 0.8183384208813096
+     },
+     "scaffold|4": {
+      "mae": 0.6242991463231198,
+      "rmse": 0.7971026674412983,
+      "r2": 0.832000235195088
+     }
+    },
+    "summary": {
+     "random": {
+      "mae_mean": 0.4737880306476662,
+      "mae_std": 0.03633664055978631,
+      "rmse_mean": 0.6460359278903026,
+      "rmse_std": 0.04045215441709719,
+      "r2_mean": 0.8969539208281342,
+      "r2_std": 0.016016370294058974
+     },
+     "scaffold": {
+      "mae_mean": 0.6713451458562195,
+      "mae_std": 0.09912401220410247,
+      "rmse_mean": 0.8811915674350879,
+      "rmse_std": 0.10453558797729197,
+      "r2_mean": 0.819415047481072,
+      "r2_std": 0.015533160604905907
+     }
+    }
+   },
+   "LIT-ESOL": {
+    "per_seed": {
+     "random|0": {
+      "mae": 0.6573392857142857,
+      "rmse": 0.837714471472402,
+      "r2": 0.8310540213439823
+     },
+     "random|1": {
+      "mae": 0.6849017857142857,
+      "rmse": 0.8830436356715335,
+      "r2": 0.8076681136778343
+     },
+     "random|2": {
+      "mae": 0.6415178571428571,
+      "rmse": 0.8327805726257411,
+      "r2": 0.8435141554312675
+     },
+     "random|3": {
+      "mae": 0.7276517857142857,
+      "rmse": 0.9286583592550522,
+      "r2": 0.7688820967013977
+     },
+     "random|4": {
+      "mae": 0.6544464285714285,
+      "rmse": 0.8437271690032778,
+      "r2": 0.825028331345923
+     },
+     "scaffold|0": {
+      "mae": 0.9587946428571428,
+      "rmse": 1.2157687493046176,
+      "r2": 0.7274324990977095
+     },
+     "scaffold|1": {
+      "mae": 0.746642857142857,
+      "rmse": 0.9751272719130418,
+      "r2": 0.7751271026404154
+     },
+     "scaffold|2": {
+      "mae": 0.7344196428571429,
+      "rmse": 0.9156136359606835,
+      "r2": 0.7833814091533247
+     },
+     "scaffold|3": {
+      "mae": 0.6522857142857144,
+      "rmse": 0.8448409930699555,
+      "r2": 0.8306412515800767
+     },
+     "scaffold|4": {
+      "mae": 0.7330625,
+      "rmse": 0.9015610321230932,
+      "r2": 0.7850831765318532
+     }
+    },
+    "summary": {
+     "random": {
+      "mae_mean": 0.6731714285714285,
+      "mae_std": 0.03431086398556912,
+      "rmse_mean": 0.8651848416056014,
+      "rmse_std": 0.04065991135371282,
+      "r2_mean": 0.8152293437000809,
+      "r2_std": 0.028946980239274098
+     },
+     "scaffold": {
+      "mae_mean": 0.7650410714285714,
+      "mae_std": 0.11462221884631504,
+      "rmse_mean": 0.9705823364742784,
+      "rmse_std": 0.14468363539665444,
+      "r2_mean": 0.780333087800676,
+      "r2_std": 0.03670266174096697
+     }
+    }
+   }
+  },
+  "error_analysis_validation": {
+   "random": {
+    "n_predictions": 555,
+    "residual_vs_measured_slope": -0.10842206166970886,
+    "spearman_abs_error_vs_similarity": -0.08978061593219352,
+    "rmse_by_similarity": {
+     "sim<0.3": {
+      "n": 41,
+      "rmse": 1.199287686692433
+     },
+     "0.3-0.5": {
+      "n": 151,
+      "rmse": 0.7495083345355679
+     },
+     "0.5-0.7": {
+      "n": 260,
+      "rmse": 0.5632556856668929
+     },
+     "sim>=0.7": {
+      "n": 103,
+      "rmse": 0.6592900606984631
+     }
+    },
+    "rmse_by_solubility": {
+     "logS<-6": {
+      "n": 54,
+      "rmse": 0.9013425683281334
+     },
+     "-6<=logS<-2": {
+      "n": 313,
+      "rmse": 0.648606879388262
+     },
+     "logS>=-2": {
+      "n": 188,
+      "rmse": 0.7127501497512573
+     }
+    },
+    "spearman_abs_error_vs_tree_std": 0.3768194137815914,
+    "rmse_low_vs_high_uncertainty": {
+     "faible_incertitude": 0.5037488494281169,
+     "forte_incertitude": 0.8507952458070465
+    }
+   },
+   "scaffold": {
+    "n_predictions": 555,
+    "residual_vs_measured_slope": -0.19123037595103695,
+    "spearman_abs_error_vs_similarity": -0.18746778374921907,
+    "rmse_by_similarity": {
+     "sim<0.3": {
+      "n": 117,
+      "rmse": 1.0066229193845924
+     },
+     "0.3-0.5": {
+      "n": 265,
+      "rmse": 0.9080009474927583
+     },
+     "0.5-0.7": {
+      "n": 131,
+      "rmse": 0.7493571993483646
+     },
+     "sim>=0.7": {
+      "n": 42,
+      "rmse": 0.5792679133014993
+     }
+    },
+    "rmse_by_solubility": {
+     "logS<-6": {
+      "n": 59,
+      "rmse": 1.10857884445617
+     },
+     "-6<=logS<-2": {
+      "n": 340,
+      "rmse": 0.7529593776777265
+     },
+     "logS>=-2": {
+      "n": 156,
+      "rmse": 1.0109102702345727
+     }
+    },
+    "spearman_abs_error_vs_tree_std": 0.06642485141751298,
+    "rmse_low_vs_high_uncertainty": {
+     "faible_incertitude": 0.8568430804179616,
+     "forte_incertitude": 0.8923878894124023
+    }
+   },
+   "permutation_importance_top10": [
+    {
+     "variable": "MolLogP",
+     "delta_rmse": 1.9036
+    },
+    {
+     "variable": "MolMR",
+     "delta_rmse": 0.3198
+    },
+    {
+     "variable": "NumHeteroatoms",
+     "delta_rmse": 0.0701
+    },
+    {
+     "variable": "MolWt",
+     "delta_rmse": 0.0595
+    },
+    {
+     "variable": "TPSA",
+     "delta_rmse": 0.0408
+    },
+    {
+     "variable": "FractionCSP3",
+     "delta_rmse": 0.0324
+    },
+    {
+     "variable": "NumHAcceptors",
+     "delta_rmse": 0.0271
+    },
+    {
+     "variable": "AromaticProportion",
+     "delta_rmse": 0.014
+    },
+    {
+     "variable": "NOCount",
+     "delta_rmse": 0.0126
+    },
+    {
+     "variable": "LabuteASA",
+     "delta_rmse": 0.0095
+    }
+   ]
+  }
+ }
+}

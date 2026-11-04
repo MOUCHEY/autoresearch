@@ -1,0 +1,118 @@
+{
+ "title": "Descripteurs + empreintes de Morgan combinés",
+ "hypothesis": "Les empreintes apportent une information locale (groupes fonctionnels) complémentaire aux descripteurs globaux.",
+ "justification": "Résultat attendu de E05/E06 ; combinaison fréquente en QSAR.",
+ "config": {
+  "features": [
+   "physchem",
+   "morgan2_2048"
+  ],
+  "model": "random_forest",
+  "params": {
+   "n_estimators": 500,
+   "min_samples_leaf": 1,
+   "max_features": 1.0
+  }
+ },
+ "config_hash": "afe53710ff",
+ "compared_to": "E05",
+ "timestamp": "2026-11-04 01:10 UTC",
+ "git_commit": "b5ccddf+modifs",
+ "environment": {
+  "python": "3.12.3",
+  "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+  "numpy": "2.3.5",
+  "pandas": "2.3.3",
+  "scikit-learn": "1.7.2",
+  "rdkit": "2025.09.3"
+ },
+ "change": "features: ['physchem'] → ['physchem', 'morgan2_2048']",
+ "status": "done",
+ "seconds": 49.366784715999984,
+ "n_features": 2067,
+ "per_seed": {
+  "random|0": {
+   "mae": 0.46883695495495403,
+   "rmse": 0.6005505990206277,
+   "r2": 0.9294976895385011
+  },
+  "random|1": {
+   "mae": 0.540332486486486,
+   "rmse": 0.778093989591475,
+   "r2": 0.8740185082887175
+  },
+  "random|2": {
+   "mae": 0.5098279819819831,
+   "rmse": 0.6955414175964205,
+   "r2": 0.880178669776336
+  },
+  "random|3": {
+   "mae": 0.4440550810810815,
+   "rmse": 0.5979628407789817,
+   "r2": 0.9195019038928544
+  },
+  "random|4": {
+   "mae": 0.5125438918918923,
+   "rmse": 0.6918712585827664,
+   "r2": 0.8770094535083302
+  },
+  "scaffold|0": {
+   "mae": 0.70115854054054,
+   "rmse": 0.8986097789169005,
+   "r2": 0.7984993375137169
+  },
+  "scaffold|1": {
+   "mae": 0.6636614774774763,
+   "rmse": 0.8697732890231569,
+   "r2": 0.8691755133087695
+  },
+  "scaffold|2": {
+   "mae": 0.6378053873873867,
+   "rmse": 0.7897925748608056,
+   "r2": 0.8393040891050632
+  },
+  "scaffold|3": {
+   "mae": 0.7601116756756744,
+   "rmse": 0.9668281548838853,
+   "r2": 0.8144961109646024
+  },
+  "scaffold|4": {
+   "mae": 0.6783962522522531,
+   "rmse": 0.8942880165078948,
+   "r2": 0.8285872045604773
+  }
+ },
+ "summary": {
+  "random": {
+   "mae_mean": 0.4951192792792794,
+   "mae_std": 0.03828351497502487,
+   "rmse_mean": 0.6728040211140544,
+   "rmse_std": 0.07547894654077149,
+   "r2_mean": 0.8960412450009478,
+   "r2_std": 0.026308589420605256
+  },
+  "scaffold": {
+   "mae_mean": 0.6882266666666661,
+   "mae_std": 0.04630625998105944,
+   "rmse_mean": 0.8838583628385287,
+   "rmse_std": 0.06375172569484751,
+   "r2_mean": 0.830012451090526,
+   "r2_std": 0.026720518544663556
+  }
+ },
+ "tuned_params": {},
+ "delta_rmse_mean": -0.005051514062532991,
+ "delta_rmse_std": 0.023776518271174527,
+ "win_fraction": 0.6,
+ "decision": "reject",
+ "per_split": {
+  "random": {
+   "delta_rmse_mean": -0.02141484989813842,
+   "win_fraction": 1.0
+  },
+  "scaffold": {
+   "delta_rmse_mean": 0.011311821773072439,
+   "win_fraction": 0.2
+  }
+ }
+}

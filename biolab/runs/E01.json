@@ -1,0 +1,98 @@
+{
+ "title": "Référence naïve : prédire la moyenne",
+ "hypothesis": "Sans aucune information structurale, l'erreur est égale à la dispersion des données (≈ écart-type). Toute méthode utile doit faire mieux.",
+ "justification": "Principe méthodologique : un modèle doit battre la référence triviale.",
+ "config": {
+  "features": [],
+  "model": "mean",
+  "params": {}
+ },
+ "config_hash": "e3a233f448",
+ "compared_to": null,
+ "timestamp": "2026-11-04 01:08 UTC",
+ "git_commit": "b5ccddf",
+ "environment": {
+  "python": "3.12.3",
+  "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+  "numpy": "2.3.5",
+  "pandas": "2.3.3",
+  "scikit-learn": "1.7.2",
+  "rdkit": "2025.09.3"
+ },
+ "change": "configuration de départ",
+ "status": "done",
+ "seconds": 0.007987953000110792,
+ "n_features": 0,
+ "per_seed": {
+  "random|0": {
+   "mae": 1.772407073740407,
+   "rmse": 2.2631868970721856,
+   "r2": -0.0012556523930828956
+  },
+  "random|1": {
+   "mae": 1.7413097137541587,
+   "rmse": 2.193209133885388,
+   "r2": -0.0009277201353194986
+  },
+  "random|2": {
+   "mae": 1.5752172677728233,
+   "rmse": 2.0142682123526403,
+   "r2": -0.004899760136119813
+  },
+  "random|3": {
+   "mae": 1.7341038816594374,
+   "rmse": 2.1294601592787457,
+   "r2": -0.020883663569779776
+  },
+  "random|4": {
+   "mae": 1.5966001456001455,
+   "rmse": 2.014272312918417,
+   "r2": -0.04245548371058927
+  },
+  "scaffold|0": {
+   "mae": 1.791180908180908,
+   "rmse": 2.2110811897501157,
+   "r2": -0.21995434297978367
+  },
+  "scaffold|1": {
+   "mae": 1.9483153962042845,
+   "rmse": 2.452384717345164,
+   "r2": -0.04004973822891511
+  },
+  "scaffold|2": {
+   "mae": 1.603296751296751,
+   "rmse": 1.9939723415370694,
+   "r2": -0.024275990200155473
+  },
+  "scaffold|3": {
+   "mae": 1.7488209724876391,
+   "rmse": 2.2474985230372035,
+   "r2": -0.0024281893982733838
+  },
+  "scaffold|4": {
+   "mae": 1.7903895006117232,
+   "rmse": 2.1610038143705816,
+   "r2": -0.0009202644750805344
+  }
+ },
+ "summary": {
+  "random": {
+   "mae_mean": 1.6839276165053942,
+   "mae_std": 0.09094366954101614,
+   "rmse_mean": 2.1228793431014754,
+   "rmse_std": 0.10984951188129605,
+   "r2_mean": -0.014084455988978251,
+   "r2_std": 0.017840830807741074
+  },
+  "scaffold": {
+   "mae_mean": 1.7764007057562612,
+   "mae_std": 0.12318119001469939,
+   "rmse_mean": 2.213188117208027,
+   "rmse_std": 0.16520851549957324,
+   "r2_mean": -0.05752570505644163,
+   "r2_std": 0.09224143253891576
+  }
+ },
+ "tuned_params": {},
+ "decision": "reference"
+}

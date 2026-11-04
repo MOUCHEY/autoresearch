@@ -1,0 +1,117 @@
+{
+ "title": "Gradient boosting (HistGradientBoosting) à la place de la forêt",
+ "hypothesis": "Le boosting, qui corrige séquentiellement les erreurs, est plus précis que la forêt aléatoire sur des données tabulaires de cette taille.",
+ "justification": "Algorithme alternatif courant ; XGBoost figure parmi les références de MoleculeNet.",
+ "config": {
+  "features": [
+   "physchem"
+  ],
+  "model": "hist_gradient_boosting",
+  "params": {
+   "max_iter": 500,
+   "learning_rate": 0.05,
+   "min_samples_leaf": 10
+  }
+ },
+ "config_hash": "18e607747a",
+ "compared_to": "E05",
+ "timestamp": "2026-11-04 01:13 UTC",
+ "git_commit": "b5ccddf+modifs",
+ "environment": {
+  "python": "3.12.3",
+  "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+  "numpy": "2.3.5",
+  "pandas": "2.3.3",
+  "scikit-learn": "1.7.2",
+  "rdkit": "2025.09.3"
+ },
+ "change": "model: random_forest → hist_gradient_boosting ; params: {'n_estimators': 500, 'min_samples_leaf': 1, 'max_features': 1.0} → {'max_iter': 500, 'learning_rate': 0.05, 'min_samples_leaf': 10}",
+ "status": "done",
+ "seconds": 10.664013725000132,
+ "n_features": 19,
+ "per_seed": {
+  "random|0": {
+   "mae": 0.522301932361439,
+   "rmse": 0.7139206127703092,
+   "r2": 0.9003668219570933
+  },
+  "random|1": {
+   "mae": 0.5469722871069074,
+   "rmse": 0.8154814041467608,
+   "r2": 0.8616208211103862
+  },
+  "random|2": {
+   "mae": 0.5303285868798531,
+   "rmse": 0.7470847117054722,
+   "r2": 0.8617618724380982
+  },
+  "random|3": {
+   "mae": 0.4162047838968495,
+   "rmse": 0.573387802864067,
+   "r2": 0.9259825503980949
+  },
+  "random|4": {
+   "mae": 0.5233586585792015,
+   "rmse": 0.7436172062882384,
+   "r2": 0.8579242320329798
+  },
+  "scaffold|0": {
+   "mae": 0.661714419703006,
+   "rmse": 0.8805802187436121,
+   "r2": 0.8065039748133713
+  },
+  "scaffold|1": {
+   "mae": 0.678903651745364,
+   "rmse": 0.8897691506596208,
+   "r2": 0.8630911270583317
+  },
+  "scaffold|2": {
+   "mae": 0.6331296258985819,
+   "rmse": 0.8070153377549192,
+   "r2": 0.8322191808379221
+  },
+  "scaffold|3": {
+   "mae": 0.7841770934367372,
+   "rmse": 0.993234605171731,
+   "r2": 0.8042245974215275
+  },
+  "scaffold|4": {
+   "mae": 0.5946107101914095,
+   "rmse": 0.7961594833970372,
+   "r2": 0.8641409541531349
+  }
+ },
+ "summary": {
+  "random": {
+   "mae_mean": 0.5078332497648501,
+   "mae_std": 0.052163352289316844,
+   "rmse_mean": 0.7186983475549695,
+   "rmse_std": 0.08934718291801758,
+   "r2_mean": 0.8815312595873305,
+   "r2_std": 0.030311885635343823
+  },
+  "scaffold": {
+   "mae_mean": 0.6705071001950198,
+   "mae_std": 0.07110910327114472,
+   "rmse_mean": 0.873351759145384,
+   "rmse_std": 0.07914045485997333,
+   "r2_mean": 0.8340359668568574,
+   "r2_std": 0.029157081641400868
+  }
+ },
+ "tuned_params": {},
+ "delta_rmse_mean": 0.012642347311352364,
+ "delta_rmse_std": 0.04864183993422713,
+ "win_fraction": 0.3,
+ "decision": "reject",
+ "per_split": {
+  "random": {
+   "delta_rmse_mean": 0.024479476542776823,
+   "win_fraction": 0.4
+  },
+  "scaffold": {
+   "delta_rmse_mean": 0.0008052180799279051,
+   "win_fraction": 0.2
+  }
+ }
+}

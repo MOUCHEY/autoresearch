@@ -1,0 +1,117 @@
+{
+ "title": "Descripteurs physico-chimiques étendus (19 descripteurs)",
+ "hypothesis": "Ajouter polarité (TPSA), liaisons hydrogène, cycles, halogènes, etc. fournit une information complémentaire au logP.",
+ "justification": "Delaney 2004 testait 9 propriétés ; la solubilité dépend aussi des interactions polaires.",
+ "config": {
+  "features": [
+   "physchem"
+  ],
+  "model": "random_forest",
+  "params": {
+   "n_estimators": 500,
+   "min_samples_leaf": 1,
+   "max_features": 1.0
+  }
+ },
+ "config_hash": "5944cf91dd",
+ "compared_to": "E04",
+ "timestamp": "2026-11-04 01:08 UTC",
+ "git_commit": "b5ccddf",
+ "environment": {
+  "python": "3.12.3",
+  "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+  "numpy": "2.3.5",
+  "pandas": "2.3.3",
+  "scikit-learn": "1.7.2",
+  "rdkit": "2025.09.3"
+ },
+ "change": "features: ['esol4'] → ['physchem']",
+ "status": "done",
+ "seconds": 11.18786573400007,
+ "n_features": 19,
+ "per_seed": {
+  "random|0": {
+   "mae": 0.47592878841508907,
+   "rmse": 0.6186092435555977,
+   "r2": 0.9251939107643271
+  },
+  "random|1": {
+   "mae": 0.5726619312626309,
+   "rmse": 0.8299634159067589,
+   "r2": 0.8566622694322854
+  },
+  "random|2": {
+   "mae": 0.531825219506547,
+   "rmse": 0.7197750780098711,
+   "r2": 0.8716837216613793
+  },
+  "random|3": {
+   "mae": 0.44686208821718804,
+   "rmse": 0.6080494854515615,
+   "r2": 0.9167632592427778
+  },
+  "random|4": {
+   "mae": 0.5092328326677328,
+   "rmse": 0.6946971321371743,
+   "r2": 0.8760027184968369
+  },
+  "scaffold|0": {
+   "mae": 0.6795625048455547,
+   "rmse": 0.8757293883356325,
+   "r2": 0.8086299165877306
+  },
+  "scaffold|1": {
+   "mae": 0.6619412282659272,
+   "rmse": 0.88344751660056,
+   "r2": 0.865029637139576
+  },
+  "scaffold|2": {
+   "mae": 0.623310790701091,
+   "rmse": 0.7658532824283424,
+   "r2": 0.8488981126414307
+  },
+  "scaffold|3": {
+   "mae": 0.7502666574064689,
+   "rmse": 0.9611150318108082,
+   "r2": 0.8166819705106644
+  },
+  "scaffold|4": {
+   "mae": 0.6694736053911071,
+   "rmse": 0.8765874861519378,
+   "r2": 0.8353055560969146
+  }
+ },
+ "summary": {
+  "random": {
+   "mae_mean": 0.5073021720138376,
+   "mae_std": 0.048770632469065454,
+   "rmse_mean": 0.6942188710121927,
+   "rmse_std": 0.0897523101241224,
+   "r2_mean": 0.8892611759195214,
+   "r2_std": 0.029979027319678938
+  },
+  "scaffold": {
+   "mae_mean": 0.6769109573220298,
+   "mae_std": 0.04620734328193307,
+   "rmse_mean": 0.872546541065456,
+   "rmse_std": 0.06959367789725895,
+   "r2_mean": 0.8349090385952632,
+   "r2_std": 0.023053850762471958
+  }
+ },
+ "tuned_params": {},
+ "delta_rmse_mean": -0.052148473508381164,
+ "delta_rmse_std": 0.04497792350764982,
+ "win_fraction": 0.9,
+ "decision": "keep",
+ "per_split": {
+  "random": {
+   "delta_rmse_mean": -0.04309433307453538,
+   "win_fraction": 1.0
+  },
+  "scaffold": {
+   "delta_rmse_mean": -0.061202613942226945,
+   "win_fraction": 0.8
+  }
+ }
+}

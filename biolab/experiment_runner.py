@@ -6,6 +6,7 @@ Commandes (depuis le dossier biolab/, environnement activé) :
     python experiment_runner.py run        # exécute les expériences en attente
     python experiment_runner.py final      # évaluation UNIQUE sur le test verrouillé
     python experiment_runner.py status     # état du laboratoire
+    python experiment_runner.py outputs    # régénère les fichiers de synthèse sans recalculer
 
 Pour chaque expérience de research_config.yaml, la boucle :
   1. lit l'hypothèse et sa justification ;
@@ -59,8 +60,10 @@ def git_commit() -> str:
     try:
         sha = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=LAB,
                              capture_output=True, text=True, check=True).stdout.strip()
-        dirty = subprocess.run(["git", "status", "--porcelain", "--", "*.py", "*.yaml"], cwd=LAB,
-                               capture_output=True, text=True).stdout.strip()
+        # "+modifs" = un fichier .py/.yaml SUIVI par Git a été modifié depuis le commit.
+        # (Les nouveaux fichiers non suivis sont ignorés : ils n'influencent pas le calcul.)
+        dirty = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no", "--", "*.py", "*.yaml"],
+                               cwd=LAB, capture_output=True, text=True).stdout.strip()
         return sha + ("+modifs" if dirty else "")
     except Exception:
         return "inconnu"
@@ -471,13 +474,22 @@ def propose_next(state: dict) -> list[str]:
         slope = fa["random"]["residual_vs_measured_slope"]
         if slope < -0.1:
             out.append(f"Les résidus diminuent avec la solubilité mesurée (pente {slope:.2f}) : les molécules très peu "
-                       "solubles sont surestimées. Hypothèse (équation générale de solubilité) : il manque "
+                       "solubles sont prédites trop solubles, et les très solubles pas assez (retour vers la moyenne). "
+                       "Hypothèse (équation générale de solubilité) : il manque "
                        "l'information sur le cristal (point de fusion). Piste : descripteurs de symétrie/planéité, "
                        "ou un jeu de données incluant le point de fusion.")
         sp = fa["random"].get("spearman_abs_error_vs_tree_std")
+        ss = fa["scaffold"].get("spearman_abs_error_vs_tree_std")
         if sp is not None and sp > 0.2:
-            out.append(f"L'incertitude de la forêt (écart-type entre arbres) est corrélée à l'erreur (Spearman {sp:.2f}) : "
-                       "piste d'un indicateur de fiabilité à afficher avec chaque prédiction ; à calibrer.")
+            msg = (f"L'incertitude de la forêt (écart-type entre arbres) est corrélée à l'erreur en split aléatoire "
+                   f"(Spearman {sp:.2f})")
+            if ss is not None and ss < 0.2:
+                msg += (f", mais presque plus en split scaffold (Spearman {ss:.2f}) : elle n'est PAS fiable hors du "
+                        "domaine connu. Piste : tester un indicateur fondé sur la similarité à l'entraînement, ou une "
+                        "prédiction conforme (conformal prediction), en validation.")
+            else:
+                msg += " : piste d'un indicateur de fiabilité à afficher avec chaque prédiction ; à calibrer."
+            out.append(msg)
     out.append("Phase A suivante : lipophilie (jeu Lipophilicity de MoleculeNet, ~4200 molécules) avec "
                "exactement le même protocole, pour vérifier si les conclusions se transfèrent.")
     out.append("Comparer avec un modèle de graphe (ex. Chemprop) seulement si le gain attendu justifie le coût : "
@@ -493,6 +505,11 @@ def _replace_block(path: Path, tag: str, content: str) -> None:
     before, rest = text.split(start, 1)
     _, after = rest.split(end, 1)
     path.write_text(f"{before}{start}\n{content}\n{end}{after}", encoding="utf-8")
+
+
+def short(text: str, n: int = 220) -> str:
+    text = " ".join(text.split())
+    return text if len(text) <= n else text[:n].rsplit(" ", 1)[0] + " …"
 
 
 def fmt(s: dict, st: str, m: str = "rmse") -> str:
@@ -532,11 +549,11 @@ def write_outputs(cfg: dict, state: dict) -> None:
         else:
             proof = (f"RMSE alé. {e['summary']['random']['rmse_mean']:.2f} / "
                      f"scaf. {e['summary']['scaffold']['rmse_mean']:.2f}")
-        hyp.append(f"| {eid} | {e['hypothesis'].splitlines()[0][:150]} | {status} | {proof} |")
+        hyp.append(f"| {eid} | {short(e['hypothesis'])} | {status} | {proof} |")
     tested = set(state["experiments"])
     for exp in cfg["experiments"]:
         if exp["id"] not in tested:
-            hyp.append(f"| {exp['id']} | {exp['hypothesis'].strip()[:150]} | Non testée | — |")
+            hyp.append(f"| {exp['id']} | {short(exp['hypothesis'])} | Non testée | — |")
     journal.append(f"**Champion actuel : {state['champion']}** · temps de calcul cumulé : {state['total_seconds']:.0f} s "
                    f"/ {cfg['budget']['max_total_seconds']} s · évaluations du test : {len(state['test_evaluations'])}")
     _replace_block(LAB / "research_memory.md", "JOURNAL", "\n".join(journal))
@@ -564,7 +581,7 @@ def cmd_status(cfg: dict) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Boucle AutoResearch — mission solubilité")
-    ap.add_argument("command", choices=["describe", "run", "final", "status"])
+    ap.add_argument("command", choices=["describe", "run", "final", "status", "outputs"])
     ap.add_argument("--only", help="n'exécuter que cette expérience (ex. E04)")
     ap.add_argument("--force", action="store_true", help="ré-évaluer le test (tracé dans l'état)")
     ap.add_argument("--config", default=str(LAB / "research_config.yaml"))
@@ -577,6 +594,8 @@ def main() -> None:
         cmd_run(cfg, a.only)
     elif a.command == "final":
         cmd_final(cfg, a.force)
+    elif a.command == "outputs":  # régénère results.csv, mémoire, hypothèses et figure 2 depuis runs/state.json
+        write_outputs(cfg, load_state(cfg))
     else:
         cmd_status(cfg)
 

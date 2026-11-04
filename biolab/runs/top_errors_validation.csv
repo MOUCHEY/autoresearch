@@ -1,0 +1,31 @@
+split_type,name,smiles,y_measured,residual_mean,n_validation_appearances,max_sim_train,scaffold
+random,Dimecron,CCN(CC)C(=O)C(Cl)=CCOP(=O)(OC)OC,0.52,-3.69,2,0.26,(acyclique)
+random,Naled,COP(=O)(OC)OC(Br)C(Cl)(Cl)Br,-2.28,-2.66,1,0.26,(acyclique)
+random,Antipyrene,Cc1cc(=O)n(-c2ccccc2)n1C,0.72,-2.5,1,0.49,O=c1cc[nH]n1-c1ccccc1
+random,simazine,CCNc1nc(Cl)nc(NCC)n1,-4.55,2.48,1,0.73,c1ncncn1
+random,Triethyl phosphate,CCOP(=O)(OCC)OCC,0.43,-2.45,1,0.35,(acyclique)
+random,Anthraquinone,O=C1c2ccccc2C(=O)c2ccccc21,-5.19,2.35,2,0.5,O=C1c2ccccc2C(=O)c2ccccc21
+random,Acephate,COP(=O)(NC(C)=O)SC,0.54,-2.11,1,0.3,(acyclique)
+random,Carbazole,c1ccc2c(c1)[nH]c1ccccc12,-5.27,1.92,1,0.47,c1ccc2c(c1)[nH]c1ccccc12
+random,cycloheximide,CC1CC(C)C(=O)C(C(O)CC2CC(=O)NC(=O)C2)C1,-1.13,-1.68,1,0.24,O=C1CC(CCC2CCCCC2=O)CC(=O)N1
+random,dimetan,CN(C)C(=O)OC1=CC(=O)CC(C)(C)C1,-0.85,-1.68,1,0.43,O=C1C=CCCC1
+random,Dialifor | Dialifos,CCOP(=S)(OCC)SC(CCl)N1C(=O)c2ccccc2C1=O,-6.34,1.67,2,0.5,O=C1NC(=O)c2ccccc21
+random,Dienochlor,ClC1=C(Cl)C(Cl)(C2(Cl)C(Cl)=C(Cl)C(Cl)=C2Cl)C(Cl)=C1Cl,-7.28,-1.64,1,0.22,C1=CC(C2C=CC=C2)C=C1
+random,1-Octadecanol,CCCCCCCCCCCCCCCCCCO,-8.4,1.61,1,1.0,(acyclique)
+random,phenothrin,CC(C)=CC1C(C(=O)OCc2cccc(Oc3ccccc3)c2)C1(C)C,-5.24,-1.6,1,0.84,O=C(OCc1cccc(Oc2ccccc2)c1)C1CC1
+random,dioctyl phthalate,CCCCCCCCOC(=O)c1ccccc1C(=O)OCCCCCCCC,-5.12,-1.57,1,1.0,c1ccccc1
+scaffold,bromadiolone,O=c1oc2ccccc2c(O)c1C(CC(O)c1ccc(-c2ccc(Br)cc2)cc1)c1ccccc1,-4.44,-3.39,2,0.44,O=c1oc2ccccc2cc1C(CCc1ccc(-c2ccccc2)cc1)c1ccccc1
+scaffold,Dienochlor,ClC1=C(Cl)C(Cl)(C2(Cl)C(Cl)=C(Cl)C(Cl)=C2Cl)C(Cl)=C1Cl,-7.28,-2.69,1,0.22,C1=CC(C2C=CC=C2)C=C1
+scaffold,Flumethasone,CC1CC2C3CC(F)C4=CC(=O)C=CC4(C)C3(F)C(O)CC2(C)C1(O)C(=O)CO,-5.61,2.07,2,0.42,O=C1C=CC2C(=C1)CCC1C3CCCC3CCC21
+scaffold,Riboflavin,Cc1cc2nc3c(=O)[nH]c(=O)nc-3n(CC(O)C(O)C(O)CO)c2cc1C,-3.68,2.04,2,0.19,O=c1nc2[nH]c3ccccc3nc-2c(=O)[nH]1
+scaffold,Dialifor | Dialifos,CCOP(=S)(OCC)SC(CCl)N1C(=O)c2ccccc2C1=O,-6.34,2.01,1,0.35,O=C1NC(=O)c2ccccc21
+scaffold,Dyphylline,Cn1c(=O)c2c(ncn2CC(O)CO)n(C)c1=O,-0.17,-1.98,1,0.22,O=c1[nH]c(=O)c2[nH]cnc2[nH]1
+scaffold,2-Ethyl pyridine,CCc1ccccn1,0.51,-1.92,3,0.39,c1ccncc1
+scaffold,Etofenprox,CCOc1ccc(C(C)(C)COCc2cccc(Oc3ccccc3)c2)cc1,-8.6,1.91,1,0.42,c1ccc(CCOCc2cccc(Oc3ccccc3)c2)cc1
+scaffold,norbormide,O=C1NC(=O)C2C3C(C(O)(c4ccccc4)c4ccccn4)=CC(C3=C(c3ccccc3)c3ccccn3)C12,-3.93,-1.91,2,0.18,O=C1NC(=O)C2C3C(C(c4ccccc4)c4ccccn4)=CC(C3=C(c3ccccc3)c3ccccn3)C12
+scaffold,Etomidate,CCOC(=O)c1cncn1C(C)c1ccccc1,-4.74,1.9,1,0.43,c1ccc(Cn2ccnc2)cc1
+scaffold,Chlorimuron-ethyl (ph 7),CCOC(=O)c1ccccc1S(=O)(=O)NN(C=O)c1nc(Cl)cc(OC)n1,-4.58,1.86,1,0.36,O=S(=O)(NNc1ncccn1)c1ccccc1
+scaffold,Mirex,ClC1(Cl)C2(Cl)C3(Cl)C4(Cl)C(Cl)(Cl)C5(Cl)C3(Cl)C1(Cl)C5(Cl)C24Cl,-6.8,-1.83,2,0.29,C1C2C3C4CC5C3C1C5C24
+scaffold,"2,6-Dimethylpyridine",Cc1cccc(C)n1,0.45,-1.83,3,0.39,c1ccncc1
+scaffold,"2,3-Dimethylpyridine",Cc1cccnc1C,0.38,-1.76,3,0.42,c1ccncc1
+scaffold,"3,5-Dimethylpyridine",Cc1cncc(C)c1,0.38,-1.76,3,0.5,c1ccncc1

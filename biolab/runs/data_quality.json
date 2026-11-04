@@ -1,0 +1,198 @@
+{
+ "n_raw_rows": 1128,
+ "missing_values_per_column": {
+  "Compound ID": 0,
+  "ESOL predicted log solubility in mols per litre": 0,
+  "Minimum Degree": 0,
+  "Molecular Weight": 0,
+  "Number of H-Bond Donors": 0,
+  "Number of Rings": 0,
+  "Number of Rotatable Bonds": 0,
+  "Polar Surface Area": 0,
+  "measured log solubility in mols per litre": 0,
+  "smiles": 0
+ },
+ "n_unparsable_smiles": 0,
+ "n_out_of_plausible_range": 0,
+ "target_unit": "log10(mol/L)",
+ "target_min": -11.6,
+ "target_max": 1.58,
+ "duplicate_groups_merged": [
+  {
+   "inchikey14": "QMMOXUPEWRXHJS",
+   "names": "trans-2-Pentene  | cis-2-Pentene",
+   "values": [
+    -2.54,
+    -2.54
+   ],
+   "spread": 0.0
+  },
+  {
+   "inchikey14": "VIROVYVQCGLCII",
+   "names": "Amobarbital | 5-Ethyl-5-(3-methylbutyl)barbital",
+   "values": [
+    -2.468,
+    -2.658
+   ],
+   "spread": 0.19
+  },
+  {
+   "inchikey14": "WEEGYLXZBRQIMU",
+   "names": "eucalyptol | 1,8-Cineole",
+   "values": [
+    -1.64,
+    -1.74
+   ],
+   "spread": 0.1
+  },
+  {
+   "inchikey14": "APSMUYYLXZULMS",
+   "names": "2-bromonaphthalene | 2-Bromonapthalene",
+   "values": [
+    -4.4,
+    -4.4
+   ],
+   "spread": 0.0
+  },
+  {
+   "inchikey14": "QGXBDMJGAMFCBF",
+   "names": "Epiandrosterone | Androsterone",
+   "values": [
+    -4.16,
+    -4.402
+   ],
+   "spread": 0.242
+  },
+  {
+   "inchikey14": "MUMQYXACQUZOFP",
+   "names": "Dialifor | Dialifos",
+   "values": [
+    -6.34,
+    -6.34
+   ],
+   "spread": 0.0
+  },
+  {
+   "inchikey14": "DDBREPKUVSBGFI",
+   "names": "phenobarbital | 5-Ethyl-5-phenylbarbital",
+   "values": [
+    -2.322,
+    -2.322
+   ],
+   "spread": 0.0
+  },
+  {
+   "inchikey14": "MLUCVPSAIODCQM",
+   "names": "t-Crotonaldehyde | 2-butenal",
+   "values": [
+    0.32,
+    0.32
+   ],
+   "spread": 0.0
+  },
+  {
+   "inchikey14": "AHJKRLASYNVKDZ",
+   "names": "DDD | P,P'-DDD",
+   "values": [
+    -7.2,
+    -7.2
+   ],
+   "spread": 0.0
+  },
+  {
+   "inchikey14": "LHGVFZTZFXWLCP",
+   "names": "Guaiacol | o-Methoxyphenol",
+   "values": [
+    -1.96,
+    -1.96
+   ],
+   "spread": 0.0
+  },
+  {
+   "inchikey14": "HHLXJTDUHFBYAU",
+   "names": "probarbital | 5-Ethyl-5-isopropylbarbituric acid",
+   "values": [
+    -2.21,
+    -2.148
+   ],
+   "spread": 0.062
+  },
+  {
+   "inchikey14": "VAOCPAMSLUNLGC",
+   "names": "Metronidazole | Metranidazole",
+   "values": [
+    -1.22,
+    -1.26
+   ],
+   "spread": 0.04
+  }
+ ],
+ "duplicate_groups_excluded": [
+  {
+   "inchikey14": "FBPFZTCFMRRESA",
+   "names": "mannitol | Sorbitol",
+   "values": [
+    0.06,
+    1.09
+   ],
+   "spread": 1.03
+  }
+ ],
+ "n_clean_molecules": 1114,
+ "n_unique_scaffolds": 269,
+ "n_acyclic_molecules": 313,
+ "replicate_spread_median": 0.0,
+ "source_sha256": "8c06a76f0c6487d29ab0f903e6a7a7139f189ab3c1178f159c8be8964602f189",
+ "split_sizes": {
+  "random_seed0": {
+   "train": 891,
+   "valid": 111,
+   "test": 112
+  },
+  "random_seed1": {
+   "train": 891,
+   "valid": 111,
+   "test": 112
+  },
+  "random_seed2": {
+   "train": 891,
+   "valid": 111,
+   "test": 112
+  },
+  "random_seed3": {
+   "train": 891,
+   "valid": 111,
+   "test": 112
+  },
+  "random_seed4": {
+   "train": 891,
+   "valid": 111,
+   "test": 112
+  },
+  "scaffold_seed0": {
+   "train": 891,
+   "valid": 111,
+   "test": 112
+  },
+  "scaffold_seed1": {
+   "train": 891,
+   "valid": 111,
+   "test": 112
+  },
+  "scaffold_seed2": {
+   "train": 891,
+   "valid": 111,
+   "test": 112
+  },
+  "scaffold_seed3": {
+   "train": 891,
+   "valid": 111,
+   "test": 112
+  },
+  "scaffold_seed4": {
+   "train": 891,
+   "valid": 111,
+   "test": 112
+  }
+ }
+}

@@ -8,6 +8,7 @@ vecteur de nombres. Ce module propose plusieurs "blocs" de représentation :
   esol4         : les 4 descripteurs de l'équation ESOL de Delaney (2004)
                   logP, masse molaire, liaisons rotatives, proportion aromatique
   physchem      : 19 descripteurs physico-chimiques interprétables
+  physchem_sans_logp : les mêmes sans le logP (expérience d'ablation)
   rdkit_all     : tous les descripteurs 2D de RDKit (~217)
   morgan2_2048  : empreinte de Morgan (ECFP4), rayon 2, 2048 bits
 
@@ -93,8 +94,17 @@ def morgan2_2048(mol: Chem.Mol) -> dict[str, float]:
     return {f"morgan_{i}": float(b) for i, b in enumerate(bits)}
 
 
+def physchem_sans_logp(mol: Chem.Mol) -> dict[str, float]:
+    """Les 19 descripteurs physchem MOINS le logP : sert à une expérience
+    d'« ablation » (que perd-on si l'on retire la variable la plus importante ?)."""
+    d = physchem(mol)
+    d.pop("MolLogP")
+    return d
+
+
 FEATURE_BLOCKS = {
     "logp": lambda m: {"MolLogP": Crippen.MolLogP(m)},
+    "physchem_sans_logp": physchem_sans_logp,
     "esol4": esol4,
     "physchem": physchem,
     "rdkit_all": rdkit_all,

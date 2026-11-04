@@ -1,0 +1,113 @@
+{
+ "title": "Reproduction de la forme ESOL (4 descripteurs, linéaire)",
+ "hypothesis": "Ajouter la masse molaire, les liaisons rotatives et la proportion aromatique (les 4 descripteurs d'ESOL) améliore la régression linéaire.",
+ "justification": "Delaney 2004 : équation ESOL à 4 descripteurs.",
+ "config": {
+  "features": [
+   "esol4"
+  ],
+  "model": "linear",
+  "params": {}
+ },
+ "config_hash": "adf6770f4d",
+ "compared_to": "E02",
+ "timestamp": "2026-11-04 01:08 UTC",
+ "git_commit": "b5ccddf",
+ "environment": {
+  "python": "3.12.3",
+  "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+  "numpy": "2.3.5",
+  "pandas": "2.3.3",
+  "scikit-learn": "1.7.2",
+  "rdkit": "2025.09.3"
+ },
+ "change": "features: ['logp'] → ['esol4']",
+ "status": "done",
+ "seconds": 0.030079080999939833,
+ "n_features": 4,
+ "per_seed": {
+  "random|0": {
+   "mae": 0.7417821890921381,
+   "rmse": 0.9115691482391406,
+   "r2": 0.8375635920609922
+  },
+  "random|1": {
+   "mae": 0.9096824063084199,
+   "rmse": 1.1744992023491436,
+   "r2": 0.7129562616307314
+  },
+  "random|2": {
+   "mae": 0.7390789251810451,
+   "rmse": 0.9803685279756528,
+   "r2": 0.7619507232326683
+  },
+  "random|3": {
+   "mae": 0.7828174922773152,
+   "rmse": 0.994569774184584,
+   "r2": 0.7773064036184457
+  },
+  "random|4": {
+   "mae": 0.7446385373359649,
+   "rmse": 0.9877276748927508,
+   "r2": 0.7493339043873332
+  },
+  "scaffold|0": {
+   "mae": 0.8216458952762931,
+   "rmse": 1.0469963967662324,
+   "r2": 0.7264576512316572
+  },
+  "scaffold|1": {
+   "mae": 0.9525961106358415,
+   "rmse": 1.245377715692815,
+   "r2": 0.7317874546451459
+  },
+  "scaffold|2": {
+   "mae": 0.8918688545487403,
+   "rmse": 1.097897498651786,
+   "r2": 0.6894708860621572
+  },
+  "scaffold|3": {
+   "mae": 1.062378120259861,
+   "rmse": 1.3496449785691942,
+   "r2": 0.6385122976094135
+  },
+  "scaffold|4": {
+   "mae": 0.8484903306248565,
+   "rmse": 1.1249044803931303,
+   "r2": 0.7287812511767779
+  }
+ },
+ "summary": {
+  "random": {
+   "mae_mean": 0.7835999100389766,
+   "mae_std": 0.07270872795596611,
+   "rmse_mean": 1.0097468655282544,
+   "rmse_std": 0.09792914815734927,
+   "r2_mean": 0.7678221769860342,
+   "r2_std": 0.045662825120960156
+  },
+  "scaffold": {
+   "mae_mean": 0.9153958622691185,
+   "mae_std": 0.09592519117864062,
+   "rmse_mean": 1.1729642140146317,
+   "rmse_std": 0.12275223880070713,
+   "r2_mean": 0.7030019081450304,
+   "r2_std": 0.039954200417000624
+  }
+ },
+ "tuned_params": {},
+ "delta_rmse_mean": -0.21402968523299726,
+ "delta_rmse_std": 0.08481492433191075,
+ "win_fraction": 1.0,
+ "decision": "keep",
+ "per_split": {
+  "random": {
+   "delta_rmse_mean": -0.1994550984570014,
+   "win_fraction": 1.0
+  },
+  "scaffold": {
+   "delta_rmse_mean": -0.22860427200899314,
+   "win_fraction": 1.0
+  }
+ }
+}
