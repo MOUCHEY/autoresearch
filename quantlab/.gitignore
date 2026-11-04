@@ -1,0 +1,7 @@
+# Données de marché : jamais versionnées (volumineuses, licences des fournisseurs)
+data/
+# Détail des trades par expérience : régénérable à l'identique (graine fixée)
+runs/**/trades.csv
+.venv/
+.pytest_cache/
+__pycache__/

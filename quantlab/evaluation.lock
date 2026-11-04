@@ -1,0 +1,8 @@
+{
+  "files": {
+    "evaluation.py": "2a059abb2f45e22e61ffa9eea7b535151e928e310599ccea81e225315a65b6f6",
+    "backtest.py": "dbf86cd15c47310a665e6e75a064a59fcc5c7635b2e41a5ec0803b2d4c576e32"
+  },
+  "locked_at_utc": "2026-11-04T01:06:12.314803+00:00",
+  "reason": "V1 : test entr\u00e9es al\u00e9atoires stratifi\u00e9 (r\u00e9gime de vol x session), corrig\u00e9 AVANT l'exp\u00e9rience officielle, d\u00e9couvert pendant le contr\u00f4le positif"
+}

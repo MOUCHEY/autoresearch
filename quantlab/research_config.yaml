@@ -1,0 +1,136 @@
+# =============================================================================
+# research_config.yaml — paramètres et budget de recherche (QuantLab V1)
+#
+# Règle : ce fichier est versionné dans Git. Son hash (config_hash) est écrit
+# dans results.csv à chaque expérience, pour qu'un résultat soit toujours
+# rattaché à la configuration exacte qui l'a produit.
+# =============================================================================
+
+project:
+  name: quantlab
+  version: "1.0"
+  seed: 42                         # graine unique -> résultats reproductibles
+
+# -----------------------------------------------------------------------------
+# DONNÉES
+# -----------------------------------------------------------------------------
+data:
+  symbol: XAUUSD
+  timeframe: M5                    # unité de recherche (les M1 sont agrégées en M5)
+  # mode :
+  #   auto -> données réelles si `path` existe, sinon jeu DÉMO (étiqueté DEMO partout)
+  #   real -> échoue si les données réelles sont absentes (recommandé une fois les données là)
+  #   demo -> force le jeu synthétique
+  mode: auto
+  path: data/XAUUSD_M1.csv         # M1 ou M5. Formats : standard | mt5 | histdata (voir README)
+  format: auto
+  source_utc_offset_hours: 0       # MT5 : heure serveur du courtier (souvent +2 / +3). HistData : -5
+  point_size: 0.01                 # MT5 : la colonne <SPREAD> est en points -> USD = points * point_size
+  min_bars: 20000                  # en dessous, l'échantillon est jugé insuffisant
+
+  # Jeu de démonstration SYNTHÉTIQUE (aucune valeur historique, aucun résultat réel)
+  demo:
+    start: "2023-01-02"
+    end: "2025-12-31"
+    start_price: 2000.0
+    annual_vol: 0.16
+    planted_edge: 0.0              # 0.0 = "monde nul" (contrôle négatif : le labo doit tout rejeter)
+    positive_control_edge: 0.3     # utilisé seulement par --control positive (momentum planté)
+
+# -----------------------------------------------------------------------------
+# VARIABLES EXPLICATIVES (toutes causales : calculées avec des données <= t)
+# -----------------------------------------------------------------------------
+features:
+  atr_window: 14                   # barres M5
+  vol_fast_bars: 288               # ~1 jour de trading M5
+  vol_slow_bars: 5760              # ~20 jours de trading M5
+
+# -----------------------------------------------------------------------------
+# COÛTS DE TRANSACTION — HYPOTHÈSES À CONFRONTER À TON COURTIER
+# Exécution au prix médian (mid) +/- demi-spread +/- slippage.
+# -----------------------------------------------------------------------------
+costs:
+  spread_source: data              # data (colonne spread si disponible) | fixed
+  fixed_spread: 0.25               # USD/oz, utilisé si les données n'ont pas de spread
+  min_spread: 0.10                 # plancher (les spreads MT5 exportés sont souvent des minimums)
+  commission_roundturn: 0.07       # USD/oz aller-retour (= 7 USD par lot de 100 oz)
+  slippage_per_side: 0.05          # USD/oz par côté (entrée et sortie)
+  stress:                          # scénarios défavorables, appliqués à TOUTES les expériences
+    wide_spread:   {spread_mult: 2.0, slippage_mult: 1.0}
+    high_slippage: {spread_mult: 1.0, slippage_mult: 4.0}
+    combined:      {spread_mult: 2.0, slippage_mult: 4.0}
+
+execution:
+  bar_minutes: 5
+  gap_slack_minutes: 30            # un trade qui dure plus que hold*5min + 30 min enjambe une pause -> rejeté
+  one_position_at_a_time: true
+
+# -----------------------------------------------------------------------------
+# RISQUE (paper trading uniquement — aucun ordre réel n'est jamais envoyé)
+# -----------------------------------------------------------------------------
+risk:
+  initial_equity: 10000
+  risk_per_trade: 0.0025           # 0.25 % du capital par ATR de mouvement défavorable
+  max_leverage: 5.0
+
+# -----------------------------------------------------------------------------
+# PROTOCOLE DE VALIDATION
+# -----------------------------------------------------------------------------
+validation:
+  test_fraction: 0.25              # derniers 25 % chronologiques = TEST FINAL VERROUILLÉ
+  n_folds: 4                       # walk-forward à fenêtre croissante sur la partie "développement"
+  embargo_bars: 36                 # >= horizon de détention max : purge + embargo entre blocs
+
+evaluation:
+  alpha: 0.05
+  min_trades: 200                  # en dessous : pas de conclusion possible
+  min_profit_factor: 1.10
+  min_fold_positive_frac: 0.75     # >= 3 plis sur 4 avec espérance nette > 0
+  n_bootstrap: 2000
+  bootstrap_block: 5               # bootstrap stationnaire (Politis & Romano 1994)
+  n_null_sims: 1000                # entrées aléatoires (même nb de trades, même horizon)
+  annualization_days: 252
+
+# -----------------------------------------------------------------------------
+# BUDGET (aucune boucle illimitée)
+# -----------------------------------------------------------------------------
+budget:
+  max_experiments: 10              # par jeu de données (data_hash)
+  max_seconds_per_experiment: 300
+  max_total_seconds: 1800
+
+# -----------------------------------------------------------------------------
+# EXPÉRIENCES PRÉ-ENREGISTRÉES
+# Écrites AVANT de voir les résultats. Changer une hypothèse après coup =
+# nouvelle expérience (nouvel id), jamais une réécriture silencieuse.
+# -----------------------------------------------------------------------------
+experiments:
+  - id: E01
+    name: baseline_breakout
+    strategy: breakout
+    params: {lookback: 20, hold: 12, mode: follow}
+    hypothesis: >-
+      Référence : une clôture M5 au-dessus du plus haut (ou sous le plus bas) des
+      20 barres précédentes, tenue 12 barres (1 h), n'a pas d'espérance nette
+      positive après coûts (H0 : espérance nette <= 0).
+
+  - id: E02
+    name: breakout_high_vol
+    strategy: vol_breakout
+    baseline: E01
+    params: {lookback: 20, hold: 12, mode: follow, regime: high, quantile: 0.67}
+    hypothesis: >-
+      Les mêmes cassures, prises seulement quand la volatilité réalisée du dernier
+      jour dépasse le 67e centile (appris sur le train) de son ratio à la
+      volatilité des 20 derniers jours, ont une espérance nette supérieure à la
+      référence (volatilité forte => continuation plus forte, cf. Gao et al. 2018).
+
+  - id: E03
+    name: breakout_low_vol
+    strategy: vol_breakout
+    baseline: E01
+    params: {lookback: 20, hold: 12, mode: follow, regime: low, quantile: 0.33}
+    hypothesis: >-
+      Hypothèse concurrente ("compression puis expansion", folklore praticien) :
+      les cassures prises en régime de volatilité basse (< 33e centile) ont une
+      espérance nette supérieure à la référence.

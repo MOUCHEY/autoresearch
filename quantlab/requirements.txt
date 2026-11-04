@@ -1,0 +1,7 @@
+# QuantLab V1 — CPU uniquement, compatible iMac Intel 2017 (macOS 13, Python 3.10+)
+numpy>=1.24
+pandas>=2.0
+scipy>=1.10
+pyyaml>=6.0
+matplotlib>=3.7
+pytest>=7.0
