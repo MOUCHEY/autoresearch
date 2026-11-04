@@ -1,0 +1,241 @@
+{
+  "experiment": {
+    "id": "E02",
+    "name": "breakout_high_vol",
+    "strategy": "vol_breakout",
+    "baseline": "E01",
+    "params": {
+      "lookback": 20,
+      "hold": 12,
+      "mode": "follow",
+      "regime": "high",
+      "quantile": 0.67
+    },
+    "hypothesis": "Les mêmes cassures, prises seulement quand la volatilité réalisée du dernier jour dépasse le 67e centile (appris sur le train) de son ratio à la volatilité des 20 derniers jours, ont une espérance nette supérieure à la référence (volatilité forte => continuation plus forte, cf. Gao et al. 2018)."
+  },
+  "data_mode": "DEMO_POSITIVE_CONTROL",
+  "data_hash": "9b676b54c4a5ed3d",
+  "is_demo": true,
+  "metrics": {
+    "n_trades": 1837,
+    "long_frac": 0.517692,
+    "net_exp_bps": 3.500679,
+    "gross_exp_bps": 4.471438,
+    "cost_bps": 0.970759,
+    "net_std_bps": 40.620547,
+    "t_stat": 3.693696,
+    "gross_t_stat": 4.71744,
+    "net_exp_usd_per_oz": 1.474231,
+    "win_rate": 0.524769,
+    "avg_win_bps": 30.436628,
+    "avg_loss_bps": -26.243026,
+    "payoff_ratio": 1.159799,
+    "profit_factor": 1.280694,
+    "max_consec_losses": 10,
+    "cost_share_of_abs_gross": 0.034052,
+    "trades_per_day": 3.993478,
+    "total_return_pct": 22.828548,
+    "max_dd_pct": -8.808298,
+    "sharpe_ann": 2.033945,
+    "sortino_ann": 3.506746,
+    "avg_leverage": 0.626002,
+    "n_losing_days": 89,
+    "mc_max_dd_p95_pct": -6.222172,
+    "mc_loss_streak_p95": 12.0,
+    "ci_low_bps": 1.604961,
+    "ci_high_bps": 5.467418,
+    "null_mean_bps": -0.898014,
+    "p_null": 0.000999,
+    "stress_wide_spread_net_bps": 2.954409,
+    "stress_high_slippage_net_bps": 2.751583,
+    "stress_combined_net_bps": 2.205312,
+    "frac_folds_positive": 0.75,
+    "delta_vs_baseline_bps": 1.950442,
+    "p_vs_baseline": 0.006831,
+    "p_null_holm": 0.001998,
+    "sr_trade": 0.08618,
+    "dsr_sr0": 0.014507,
+    "dsr": 0.998806,
+    "n_trials": 1,
+    "n_trials_cumulative": 2,
+    "decision": "ACCEPT_CANDIDATE",
+    "keep": true
+  },
+  "null_quantiles_bps": {
+    "0.025": -2.6798,
+    "0.5": -0.9009,
+    "0.975": 1.0461
+  },
+  "by_fold": {
+    "1": {
+      "n": 357,
+      "net_exp_bps": 7.336,
+      "gross_exp_bps": 8.832,
+      "t_stat": 2.41
+    },
+    "2": {
+      "n": 521,
+      "net_exp_bps": -1.453,
+      "gross_exp_bps": -0.587,
+      "t_stat": -1.08
+    },
+    "3": {
+      "n": 449,
+      "net_exp_bps": 4.903,
+      "gross_exp_bps": 5.711,
+      "t_stat": 2.98
+    },
+    "4": {
+      "n": 510,
+      "net_exp_bps": 4.643,
+      "gross_exp_bps": 5.496,
+      "t_stat": 2.64
+    }
+  },
+  "by_session": {
+    "asia": {
+      "n": 717,
+      "net_exp_bps": 1.817,
+      "gross_exp_bps": 2.877,
+      "t_stat": 1.67
+    },
+    "london": {
+      "n": 442,
+      "net_exp_bps": 3.932,
+      "gross_exp_bps": 4.825,
+      "t_stat": 1.99
+    },
+    "ny": {
+      "n": 315,
+      "net_exp_bps": 2.889,
+      "gross_exp_bps": 3.868,
+      "t_stat": 1.19
+    },
+    "overlap": {
+      "n": 363,
+      "net_exp_bps": 6.831,
+      "gross_exp_bps": 7.715,
+      "t_stat": 2.4
+    }
+  },
+  "by_vol_tercile": {
+    "2_mid": {
+      "n": 173,
+      "net_exp_bps": 4.941,
+      "gross_exp_bps": 5.73,
+      "t_stat": 1.99
+    },
+    "3_high": {
+      "n": 1664,
+      "net_exp_bps": 3.351,
+      "gross_exp_bps": 4.341,
+      "t_stat": 3.3
+    }
+  },
+  "by_direction": {
+    "-1": {
+      "n": 886,
+      "net_exp_bps": 1.763,
+      "gross_exp_bps": 2.748,
+      "t_stat": 1.29
+    },
+    "1": {
+      "n": 951,
+      "net_exp_bps": 5.12,
+      "gross_exp_bps": 6.077,
+      "t_stat": 3.89
+    }
+  },
+  "baseline_test": "Welch unilatéral : trades retenus vs trades de la référence écartés par le filtre (n=4162)",
+  "checks": {
+    "enough_trades": true,
+    "net_ci_above_zero": true,
+    "beats_random_entries_holm": true,
+    "profit_factor_ok": true,
+    "stable_across_folds": true,
+    "survives_combined_stress": true,
+    "beats_baseline": true
+  },
+  "fitted_per_fold": [
+    {
+      "fold": 1,
+      "threshold": 1.1372
+    },
+    {
+      "fold": 2,
+      "threshold": 1.0914
+    },
+    {
+      "fold": 3,
+      "threshold": 1.1
+    },
+    {
+      "fold": 4,
+      "threshold": 1.0889
+    }
+  ],
+  "trades_path": "runs/controls/E02/trades.csv",
+  "row": {
+    "exp_id": "E02",
+    "run_utc": "2026-11-04T01:11:32+00:00",
+    "data_mode": "DEMO_POSITIVE_CONTROL",
+    "data_hash": "9b676b54c4a5ed3d",
+    "symbol": "XAUUSD",
+    "timeframe": "M5",
+    "split": "DEV",
+    "git_commit": "309f761",
+    "git_dirty": false,
+    "evaluator_hash": "14a493d542ad",
+    "config_hash": "27464f1f9ec9",
+    "name": "breakout_high_vol",
+    "type": "single",
+    "strategy": "vol_breakout",
+    "params": "{\"hold\": 12, \"lookback\": 20, \"mode\": \"follow\", \"quantile\": 0.67, \"regime\": \"high\"}",
+    "baseline": "E01",
+    "hypothesis": "Les mêmes cassures, prises seulement quand la volatilité réalisée du dernier jour dépasse le 67e centile (appris sur le train) de son ratio à la volatilité des 20 derniers jours, ont une espérance nette supérieure à la référence (volatilité forte => continuation plus forte, cf. Gao et al. 2018).",
+    "n_trades": 1837,
+    "long_frac": 0.517692,
+    "net_exp_bps": 3.500679,
+    "gross_exp_bps": 4.471438,
+    "cost_bps": 0.970759,
+    "net_std_bps": 40.620547,
+    "t_stat": 3.693696,
+    "gross_t_stat": 4.71744,
+    "net_exp_usd_per_oz": 1.474231,
+    "win_rate": 0.524769,
+    "avg_win_bps": 30.436628,
+    "avg_loss_bps": -26.243026,
+    "payoff_ratio": 1.159799,
+    "profit_factor": 1.280694,
+    "max_consec_losses": 10,
+    "cost_share_of_abs_gross": 0.034052,
+    "trades_per_day": 3.993478,
+    "total_return_pct": 22.828548,
+    "max_dd_pct": -8.808298,
+    "sharpe_ann": 2.033945,
+    "sortino_ann": 3.506746,
+    "avg_leverage": 0.626002,
+    "n_losing_days": 89,
+    "mc_max_dd_p95_pct": -6.222172,
+    "mc_loss_streak_p95": 12.0,
+    "ci_low_bps": 1.604961,
+    "ci_high_bps": 5.467418,
+    "null_mean_bps": -0.898014,
+    "p_null": 0.000999,
+    "stress_wide_spread_net_bps": 2.954409,
+    "stress_high_slippage_net_bps": 2.751583,
+    "stress_combined_net_bps": 2.205312,
+    "frac_folds_positive": 0.75,
+    "delta_vs_baseline_bps": 1.950442,
+    "p_vs_baseline": 0.006831,
+    "p_null_holm": 0.001998,
+    "sr_trade": 0.08618,
+    "dsr_sr0": 0.014507,
+    "dsr": 0.998806,
+    "n_trials": 1,
+    "n_trials_cumulative": 2,
+    "decision": "ACCEPT_CANDIDATE",
+    "keep": true,
+    "duration_s": 0.82
+  }
+}

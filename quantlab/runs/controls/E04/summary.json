@@ -1,0 +1,139 @@
+{
+  "experiment": {
+    "type": "sensitivity",
+    "name": "sensitivity_E02",
+    "base": "E02",
+    "grid": {
+      "lookback": [
+        10,
+        20,
+        40
+      ],
+      "hold": [
+        6,
+        12,
+        24
+      ]
+    },
+    "auto": true,
+    "rationale": "E02 est candidate : vérifier que le résultat ne dépend pas d'un choix de paramètres « chanceux » avant tout test final.",
+    "id": "E04"
+  },
+  "data_mode": "DEMO_POSITIVE_CONTROL",
+  "data_hash": "9b676b54c4a5ed3d",
+  "is_demo": true,
+  "metrics": {
+    "n_trades": 16559,
+    "net_exp_bps": 3.2339,
+    "n_trials": 9,
+    "decision": "ROBUST",
+    "keep": false
+  },
+  "grid_table": [
+    {
+      "hold": 6,
+      "lookback": 10,
+      "n_trades": 3364,
+      "net_exp_bps": 2.7394,
+      "gross_exp_bps": 3.6915,
+      "t_stat": 5.6
+    },
+    {
+      "hold": 6,
+      "lookback": 20,
+      "n_trades": 2539,
+      "net_exp_bps": 3.2339,
+      "gross_exp_bps": 4.189,
+      "t_stat": 5.76
+    },
+    {
+      "hold": 6,
+      "lookback": 40,
+      "n_trades": 1833,
+      "net_exp_bps": 3.1843,
+      "gross_exp_bps": 4.1369,
+      "t_stat": 4.85
+    },
+    {
+      "hold": 12,
+      "lookback": 10,
+      "n_trades": 2229,
+      "net_exp_bps": 3.0797,
+      "gross_exp_bps": 4.0554,
+      "t_stat": 3.57
+    },
+    {
+      "hold": 12,
+      "lookback": 20,
+      "n_trades": 1837,
+      "net_exp_bps": 3.5007,
+      "gross_exp_bps": 4.4714,
+      "t_stat": 3.69
+    },
+    {
+      "hold": 12,
+      "lookback": 40,
+      "n_trades": 1370,
+      "net_exp_bps": 2.8953,
+      "gross_exp_bps": 3.8662,
+      "t_stat": 2.56
+    },
+    {
+      "hold": 24,
+      "lookback": 10,
+      "n_trades": 1304,
+      "net_exp_bps": 4.1878,
+      "gross_exp_bps": 5.1518,
+      "t_stat": 2.53
+    },
+    {
+      "hold": 24,
+      "lookback": 20,
+      "n_trades": 1154,
+      "net_exp_bps": 3.3676,
+      "gross_exp_bps": 4.3289,
+      "t_stat": 1.89
+    },
+    {
+      "hold": 24,
+      "lookback": 40,
+      "n_trades": 929,
+      "net_exp_bps": 4.6369,
+      "gross_exp_bps": 5.5913,
+      "t_stat": 2.32
+    }
+  ],
+  "sensitivity": {
+    "frac_positive": 1.0,
+    "median_net_bps": 3.2339,
+    "min_net_bps": 2.7394,
+    "max_net_bps": 4.6369,
+    "verdict": "ROBUST"
+  },
+  "base_experiment": "E02",
+  "row": {
+    "exp_id": "E04",
+    "run_utc": "2026-11-04T01:11:33+00:00",
+    "data_mode": "DEMO_POSITIVE_CONTROL",
+    "data_hash": "9b676b54c4a5ed3d",
+    "symbol": "XAUUSD",
+    "timeframe": "M5",
+    "split": "DEV",
+    "git_commit": "309f761",
+    "git_dirty": false,
+    "evaluator_hash": "14a493d542ad",
+    "config_hash": "27464f1f9ec9",
+    "name": "sensitivity_E02",
+    "type": "sensitivity",
+    "strategy": "vol_breakout",
+    "params": "{\"base\": \"E02\", \"grid\": {\"hold\": [6, 12, 24], \"lookback\": [10, 20, 40]}}",
+    "baseline": null,
+    "hypothesis": "",
+    "n_trades": 16559,
+    "net_exp_bps": 3.2339,
+    "n_trials": 9,
+    "decision": "ROBUST",
+    "keep": false,
+    "duration_s": 1.21
+  }
+}

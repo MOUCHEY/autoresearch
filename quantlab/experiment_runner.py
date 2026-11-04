@@ -310,7 +310,9 @@ class Lab:
                "name": exp.get("name"), "type": exp.get("type", "single"), "strategy": exp.get("strategy"),
                "params": json.dumps(params, sort_keys=True), "baseline": exp.get("baseline"),
                "hypothesis": " ".join(str(exp.get("hypothesis", "")).split())}
-        print(f"\n>>> {exp['id']} {exp.get('name')} [{row['type']}] {row['strategy']} {row['params']}")
+        what = f"base={exp.get('base')} grille={exp.get('grid')}" if row["type"] == "sensitivity" else \
+            f"{row['strategy']} {row['params']}"
+        print(f"\n>>> {exp['id']} {exp.get('name')} [{row['type']}] {what}")
         summary: dict = {"experiment": {k: v for k, v in exp.items()}, "data_mode": self.mode,
                          "data_hash": self.md.data_hash, "is_demo": self.md.is_demo}
         try:
@@ -638,7 +640,8 @@ def main(argv=None) -> int:
     if args.control == "positive":
         cfg["data"]["demo"]["planted_edge"] = float(cfg["data"]["demo"].get("positive_control_edge", 0.3))
         results_path, write_docs, mode, suffix = RUNS / "controls" / "positive_control.csv", False, "demo", "_POSITIVE_CONTROL"
-        globals()["RUNS"] = RUNS / "controls"
+        globals()["RUNS"] = ROOT / "runs" / "controls"
+        globals()["TEST_ACCESS"] = ROOT / "runs" / "controls" / "test_access.json"
     lab = Lab(cfg, force_mode=mode, results_path=results_path, write_docs=write_docs, label_suffix=suffix)
 
     if args.final_test:

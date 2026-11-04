@@ -1,0 +1,241 @@
+{
+  "experiment": {
+    "id": "E03",
+    "name": "breakout_low_vol",
+    "strategy": "vol_breakout",
+    "baseline": "E01",
+    "params": {
+      "lookback": 20,
+      "hold": 12,
+      "mode": "follow",
+      "regime": "low",
+      "quantile": 0.33
+    },
+    "hypothesis": "Hypothèse concurrente (\"compression puis expansion\", folklore praticien) : les cassures prises en régime de volatilité basse (< 33e centile) ont une espérance nette supérieure à la référence."
+  },
+  "data_mode": "DEMO_NULL_WORLD",
+  "data_hash": "b533687bae56d934",
+  "is_demo": true,
+  "metrics": {
+    "n_trades": 1776,
+    "long_frac": 0.533784,
+    "net_exp_bps": -0.925425,
+    "gross_exp_bps": 0.206217,
+    "cost_bps": 1.131642,
+    "net_std_bps": 18.634004,
+    "t_stat": -2.092939,
+    "gross_t_stat": 0.466433,
+    "net_exp_usd_per_oz": -0.291831,
+    "win_rate": 0.471847,
+    "avg_win_bps": 12.323659,
+    "avg_loss_bps": -12.762027,
+    "payoff_ratio": 0.965651,
+    "profit_factor": 0.862703,
+    "max_consec_losses": 9,
+    "cost_share_of_abs_gross": 0.09028,
+    "trades_per_day": 3.819355,
+    "total_return_pct": -20.610906,
+    "max_dd_pct": -21.728882,
+    "sharpe_ann": -2.525952,
+    "sortino_ann": -2.996344,
+    "avg_leverage": 1.352834,
+    "n_losing_days": 123,
+    "mc_max_dd_p95_pct": -23.631798,
+    "mc_loss_streak_p95": 15.0,
+    "ci_low_bps": -1.842729,
+    "ci_high_bps": -0.014749,
+    "null_mean_bps": -1.086811,
+    "p_null": 0.365634,
+    "stress_wide_spread_net_bps": -1.520974,
+    "stress_high_slippage_net_bps": -1.871472,
+    "stress_combined_net_bps": -2.467021,
+    "frac_folds_positive": 0.0,
+    "delta_vs_baseline_bps": 0.31736,
+    "p_vs_baseline": 0.223291,
+    "p_null_holm": 1.0,
+    "sr_trade": -0.049663,
+    "dsr_sr0": 0.007932,
+    "dsr": 0.007767,
+    "n_trials": 1,
+    "n_trials_cumulative": 3,
+    "decision": "REJECT",
+    "keep": false
+  },
+  "null_quantiles_bps": {
+    "0.025": -1.9915,
+    "0.5": -1.0692,
+    "0.975": -0.1709
+  },
+  "by_fold": {
+    "1": {
+      "n": 257,
+      "net_exp_bps": -1.011,
+      "gross_exp_bps": 0.401,
+      "t_stat": -0.74
+    },
+    "2": {
+      "n": 522,
+      "net_exp_bps": -1.569,
+      "gross_exp_bps": -0.419,
+      "t_stat": -1.49
+    },
+    "3": {
+      "n": 576,
+      "net_exp_bps": -0.172,
+      "gross_exp_bps": 0.821,
+      "t_stat": -0.3
+    },
+    "4": {
+      "n": 421,
+      "net_exp_bps": -1.106,
+      "gross_exp_bps": 0.022,
+      "t_stat": -1.58
+    }
+  },
+  "by_session": {
+    "asia": {
+      "n": 768,
+      "net_exp_bps": -1.485,
+      "gross_exp_bps": -0.261,
+      "t_stat": -3.35
+    },
+    "london": {
+      "n": 390,
+      "net_exp_bps": -1.058,
+      "gross_exp_bps": -0.015,
+      "t_stat": -1.02
+    },
+    "ny": {
+      "n": 307,
+      "net_exp_bps": -0.644,
+      "gross_exp_bps": 0.503,
+      "t_stat": -0.69
+    },
+    "overlap": {
+      "n": 311,
+      "net_exp_bps": 0.345,
+      "gross_exp_bps": 1.346,
+      "t_stat": 0.21
+    }
+  },
+  "by_vol_tercile": {
+    "1_low": {
+      "n": 1470,
+      "net_exp_bps": -0.519,
+      "gross_exp_bps": 0.614,
+      "t_stat": -1.11
+    },
+    "2_mid": {
+      "n": 306,
+      "net_exp_bps": -2.88,
+      "gross_exp_bps": -1.751,
+      "t_stat": -2.34
+    }
+  },
+  "by_direction": {
+    "-1": {
+      "n": 828,
+      "net_exp_bps": -1.253,
+      "gross_exp_bps": -0.12,
+      "t_stat": -1.96
+    },
+    "1": {
+      "n": 948,
+      "net_exp_bps": -0.639,
+      "gross_exp_bps": 0.491,
+      "t_stat": -1.04
+    }
+  },
+  "baseline_test": "Welch unilatéral : trades retenus vs trades de la référence écartés par le filtre (n=3966)",
+  "checks": {
+    "enough_trades": true,
+    "net_ci_above_zero": false,
+    "beats_random_entries_holm": false,
+    "profit_factor_ok": false,
+    "stable_across_folds": false,
+    "survives_combined_stress": false,
+    "beats_baseline": false
+  },
+  "fitted_per_fold": [
+    {
+      "fold": 1,
+      "threshold": 0.7431
+    },
+    {
+      "fold": 2,
+      "threshold": 0.8027
+    },
+    {
+      "fold": 3,
+      "threshold": 0.7961
+    },
+    {
+      "fold": 4,
+      "threshold": 0.7824
+    }
+  ],
+  "trades_path": "runs/controls/null_worlds/E03/trades.csv",
+  "row": {
+    "exp_id": "E03",
+    "run_utc": "2026-11-04T01:12:27+00:00",
+    "data_mode": "DEMO_NULL_WORLD",
+    "data_hash": "b533687bae56d934",
+    "symbol": "XAUUSD",
+    "timeframe": "M5",
+    "split": "DEV",
+    "git_commit": "309f761",
+    "git_dirty": false,
+    "evaluator_hash": "14a493d542ad",
+    "config_hash": "2e227176afb1",
+    "name": "breakout_low_vol",
+    "type": "single",
+    "strategy": "vol_breakout",
+    "params": "{\"hold\": 12, \"lookback\": 20, \"mode\": \"follow\", \"quantile\": 0.33, \"regime\": \"low\"}",
+    "baseline": "E01",
+    "hypothesis": "Hypothèse concurrente (\"compression puis expansion\", folklore praticien) : les cassures prises en régime de volatilité basse (< 33e centile) ont une espérance nette supérieure à la référence.",
+    "n_trades": 1776,
+    "long_frac": 0.533784,
+    "net_exp_bps": -0.925425,
+    "gross_exp_bps": 0.206217,
+    "cost_bps": 1.131642,
+    "net_std_bps": 18.634004,
+    "t_stat": -2.092939,
+    "gross_t_stat": 0.466433,
+    "net_exp_usd_per_oz": -0.291831,
+    "win_rate": 0.471847,
+    "avg_win_bps": 12.323659,
+    "avg_loss_bps": -12.762027,
+    "payoff_ratio": 0.965651,
+    "profit_factor": 0.862703,
+    "max_consec_losses": 9,
+    "cost_share_of_abs_gross": 0.09028,
+    "trades_per_day": 3.819355,
+    "total_return_pct": -20.610906,
+    "max_dd_pct": -21.728882,
+    "sharpe_ann": -2.525952,
+    "sortino_ann": -2.996344,
+    "avg_leverage": 1.352834,
+    "n_losing_days": 123,
+    "mc_max_dd_p95_pct": -23.631798,
+    "mc_loss_streak_p95": 15.0,
+    "ci_low_bps": -1.842729,
+    "ci_high_bps": -0.014749,
+    "null_mean_bps": -1.086811,
+    "p_null": 0.365634,
+    "stress_wide_spread_net_bps": -1.520974,
+    "stress_high_slippage_net_bps": -1.871472,
+    "stress_combined_net_bps": -2.467021,
+    "frac_folds_positive": 0.0,
+    "delta_vs_baseline_bps": 0.31736,
+    "p_vs_baseline": 0.223291,
+    "p_null_holm": 1.0,
+    "sr_trade": -0.049663,
+    "dsr_sr0": 0.007932,
+    "dsr": 0.007767,
+    "n_trials": 1,
+    "n_trials_cumulative": 3,
+    "decision": "REJECT",
+    "keep": false,
+    "duration_s": 0.87
+  }
+}

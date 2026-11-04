@@ -1,0 +1,234 @@
+{
+  "experiment": {
+    "id": "E01",
+    "name": "baseline_breakout",
+    "strategy": "breakout",
+    "params": {
+      "lookback": 20,
+      "hold": 12,
+      "mode": "follow"
+    },
+    "hypothesis": "Référence : une clôture M5 au-dessus du plus haut (ou sous le plus bas) des 20 barres précédentes, tenue 12 barres (1 h), n'a pas d'espérance nette positive après coûts (H0 : espérance nette <= 0)."
+  },
+  "data_mode": "DEMO_NULL_WORLD",
+  "data_hash": "b533687bae56d934",
+  "is_demo": true,
+  "metrics": {
+    "n_trades": 5712,
+    "long_frac": 0.51243,
+    "net_exp_bps": -1.242785,
+    "gross_exp_bps": -0.031178,
+    "cost_bps": 1.211608,
+    "net_std_bps": 28.053052,
+    "t_stat": -3.34819,
+    "gross_t_stat": -0.084032,
+    "net_exp_usd_per_oz": -0.36981,
+    "win_rate": 0.47619,
+    "avg_win_bps": 17.928487,
+    "avg_loss_bps": -18.671214,
+    "payoff_ratio": 0.960221,
+    "profit_factor": 0.872928,
+    "max_consec_losses": 12,
+    "cost_share_of_abs_gross": 0.066246,
+    "trades_per_day": 12.171689,
+    "total_return_pct": -44.268199,
+    "max_dd_pct": -44.413761,
+    "sharpe_ann": -3.684797,
+    "sortino_ann": -4.330432,
+    "avg_leverage": 0.98947,
+    "n_losing_days": 275,
+    "mc_max_dd_p95_pct": -47.041955,
+    "mc_loss_streak_p95": 16.0,
+    "ci_low_bps": -1.936831,
+    "ci_high_bps": -0.513911,
+    "null_mean_bps": -1.162849,
+    "p_null": 0.584416,
+    "stress_wide_spread_net_bps": -1.905855,
+    "stress_high_slippage_net_bps": -2.210793,
+    "stress_combined_net_bps": -2.873863,
+    "frac_folds_positive": 0.0,
+    "p_null_holm": 0.584416,
+    "sr_trade": -0.044301,
+    "dsr_sr0": 0.0,
+    "dsr": 0.000413,
+    "n_trials": 1,
+    "n_trials_cumulative": 1,
+    "decision": "REJECT",
+    "keep": false
+  },
+  "null_quantiles_bps": {
+    "0.025": -1.8562,
+    "0.5": -1.1669,
+    "0.975": -0.3843
+  },
+  "by_fold": {
+    "1": {
+      "n": 1452,
+      "net_exp_bps": -2.537,
+      "gross_exp_bps": -1.079,
+      "t_stat": -2.6
+    },
+    "2": {
+      "n": 1418,
+      "net_exp_bps": -1.659,
+      "gross_exp_bps": -0.484,
+      "t_stat": -2.18
+    },
+    "3": {
+      "n": 1411,
+      "net_exp_bps": -0.139,
+      "gross_exp_bps": 0.893,
+      "t_stat": -0.26
+    },
+    "4": {
+      "n": 1431,
+      "net_exp_bps": -0.606,
+      "gross_exp_bps": 0.569,
+      "t_stat": -0.99
+    }
+  },
+  "by_session": {
+    "asia": {
+      "n": 2349,
+      "net_exp_bps": -1.278,
+      "gross_exp_bps": 0.04,
+      "t_stat": -3.27
+    },
+    "london": {
+      "n": 1295,
+      "net_exp_bps": -1.071,
+      "gross_exp_bps": 0.046,
+      "t_stat": -1.23
+    },
+    "ny": {
+      "n": 973,
+      "net_exp_bps": -1.087,
+      "gross_exp_bps": 0.136,
+      "t_stat": -1.35
+    },
+    "overlap": {
+      "n": 1095,
+      "net_exp_bps": -1.508,
+      "gross_exp_bps": -0.424,
+      "t_stat": -1.24
+    }
+  },
+  "by_vol_tercile": {
+    "1_low": {
+      "n": 1465,
+      "net_exp_bps": -0.493,
+      "gross_exp_bps": 0.639,
+      "t_stat": -1.05
+    },
+    "2_mid": {
+      "n": 2313,
+      "net_exp_bps": -1.943,
+      "gross_exp_bps": -0.736,
+      "t_stat": -3.75
+    },
+    "3_high": {
+      "n": 1934,
+      "net_exp_bps": -0.974,
+      "gross_exp_bps": 0.304,
+      "t_stat": -1.17
+    }
+  },
+  "by_direction": {
+    "-1": {
+      "n": 2785,
+      "net_exp_bps": -1.316,
+      "gross_exp_bps": -0.098,
+      "t_stat": -2.45
+    },
+    "1": {
+      "n": 2927,
+      "net_exp_bps": -1.173,
+      "gross_exp_bps": 0.032,
+      "t_stat": -2.28
+    }
+  },
+  "checks": {
+    "enough_trades": true,
+    "net_ci_above_zero": false,
+    "beats_random_entries_holm": false,
+    "profit_factor_ok": false,
+    "stable_across_folds": false,
+    "survives_combined_stress": false
+  },
+  "fitted_per_fold": [
+    {
+      "fold": 1
+    },
+    {
+      "fold": 2
+    },
+    {
+      "fold": 3
+    },
+    {
+      "fold": 4
+    }
+  ],
+  "trades_path": "runs/controls/null_worlds/E01/trades.csv",
+  "row": {
+    "exp_id": "E01",
+    "run_utc": "2026-11-04T01:12:24+00:00",
+    "data_mode": "DEMO_NULL_WORLD",
+    "data_hash": "b533687bae56d934",
+    "symbol": "XAUUSD",
+    "timeframe": "M5",
+    "split": "DEV",
+    "git_commit": "309f761",
+    "git_dirty": false,
+    "evaluator_hash": "14a493d542ad",
+    "config_hash": "2e227176afb1",
+    "name": "baseline_breakout",
+    "type": "single",
+    "strategy": "breakout",
+    "params": "{\"hold\": 12, \"lookback\": 20, \"mode\": \"follow\"}",
+    "baseline": null,
+    "hypothesis": "Référence : une clôture M5 au-dessus du plus haut (ou sous le plus bas) des 20 barres précédentes, tenue 12 barres (1 h), n'a pas d'espérance nette positive après coûts (H0 : espérance nette <= 0).",
+    "n_trades": 5712,
+    "long_frac": 0.51243,
+    "net_exp_bps": -1.242785,
+    "gross_exp_bps": -0.031178,
+    "cost_bps": 1.211608,
+    "net_std_bps": 28.053052,
+    "t_stat": -3.34819,
+    "gross_t_stat": -0.084032,
+    "net_exp_usd_per_oz": -0.36981,
+    "win_rate": 0.47619,
+    "avg_win_bps": 17.928487,
+    "avg_loss_bps": -18.671214,
+    "payoff_ratio": 0.960221,
+    "profit_factor": 0.872928,
+    "max_consec_losses": 12,
+    "cost_share_of_abs_gross": 0.066246,
+    "trades_per_day": 12.171689,
+    "total_return_pct": -44.268199,
+    "max_dd_pct": -44.413761,
+    "sharpe_ann": -3.684797,
+    "sortino_ann": -4.330432,
+    "avg_leverage": 0.98947,
+    "n_losing_days": 275,
+    "mc_max_dd_p95_pct": -47.041955,
+    "mc_loss_streak_p95": 16.0,
+    "ci_low_bps": -1.936831,
+    "ci_high_bps": -0.513911,
+    "null_mean_bps": -1.162849,
+    "p_null": 0.584416,
+    "stress_wide_spread_net_bps": -1.905855,
+    "stress_high_slippage_net_bps": -2.210793,
+    "stress_combined_net_bps": -2.873863,
+    "frac_folds_positive": 0.0,
+    "p_null_holm": 0.584416,
+    "sr_trade": -0.044301,
+    "dsr_sr0": 0.0,
+    "dsr": 0.000413,
+    "n_trials": 1,
+    "n_trials_cumulative": 1,
+    "decision": "REJECT",
+    "keep": false,
+    "duration_s": 1.59
+  }
+}
