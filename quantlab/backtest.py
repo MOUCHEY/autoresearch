@@ -135,13 +135,18 @@ def stressed_net_bps(trades: pd.DataFrame, spread_mult: float, slippage_mult: fl
 
 
 def equity_curve(trades: pd.DataFrame, initial_equity: float, risk_per_trade: float,
-                 max_leverage: float) -> pd.DataFrame:
-    """Courbe de capital en paper trading, taille de position normalisée par la volatilité :
-    un mouvement défavorable de 1 ATR coûte `risk_per_trade` du capital (levier plafonné)."""
+                 max_leverage: float, hold: int = 1) -> pd.DataFrame:
+    """Courbe de capital en paper trading, taille de position normalisée par la volatilité.
+
+    Un mouvement défavorable « typique » sur la DURÉE du trade (1 ATR x sqrt(hold), la
+    volatilité croissant comme la racine du temps) coûte `risk_per_trade` du capital.
+    (V1.0 utilisait 1 ATR d'une seule barre : pour un trade tenu 12 barres, le risque réel
+    était ~3.5 fois plus grand qu'annoncé — corrigé en V1.1, voir research_memory.md.)
+    """
     if len(trades) == 0:
         return pd.DataFrame(columns=["equity", "ret", "leverage"])
     atr = trades["atr"].to_numpy() if "atr" in trades else np.full(len(trades), np.nan)
-    lev = risk_per_trade * trades["entry_px"].to_numpy() / atr
+    lev = risk_per_trade * trades["entry_px"].to_numpy() / (atr * np.sqrt(max(hold, 1)))
     lev = np.where(np.isfinite(lev), lev, 1.0)
     lev = np.minimum(lev, max_leverage)
     r = lev * trades["net_pnl"].to_numpy() / trades["entry_px"].to_numpy()

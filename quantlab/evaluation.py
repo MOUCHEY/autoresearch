@@ -262,6 +262,24 @@ def trade_metrics(trades: pd.DataFrame, eq: pd.DataFrame, ann_days: int) -> dict
     return m
 
 
+def loss_sequence_risk(equity_returns: np.ndarray, n_sims: int, seed: int) -> dict:
+    """Scénarios de séries de pertes : on rejoue les MÊMES trades dans un ordre aléatoire
+    (n_sims fois) pour estimer le drawdown et la série de pertes qu'on peut raisonnablement
+    subir (95e centile), au lieu de se fier au seul ordre historique observé."""
+    r = np.asarray(equity_returns, dtype=float)
+    if len(r) < 2:
+        return {}
+    rng = np.random.default_rng(seed)
+    dds, streaks = np.empty(n_sims), np.empty(n_sims)
+    for s in range(n_sims):
+        x = rng.permutation(r)
+        eq = np.cumprod(1 + x)
+        dds[s] = (eq / np.maximum.accumulate(eq) - 1).min()
+        streaks[s] = _max_consecutive(x <= 0)
+    return {"mc_max_dd_p95_pct": float(np.quantile(dds, 0.05) * 100),
+            "mc_loss_streak_p95": float(np.quantile(streaks, 0.95))}
+
+
 def group_breakdown(trades: pd.DataFrame, col: str) -> dict:
     if len(trades) == 0 or col not in trades:
         return {}

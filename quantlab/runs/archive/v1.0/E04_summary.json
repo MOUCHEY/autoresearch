@@ -1,0 +1,139 @@
+{
+  "experiment": {
+    "type": "sensitivity",
+    "name": "sensitivity_E02",
+    "base": "E02",
+    "grid": {
+      "lookback": [
+        10,
+        20,
+        40
+      ],
+      "hold": [
+        6,
+        12,
+        24
+      ]
+    },
+    "auto": true,
+    "rationale": "Aucune hypothèse acceptée. Vérifier que le rejet de E02 (hypothèse principale) ne tient pas à un choix arbitraire de paramètres. Les 9 configurations comptent comme 9 essais (Deflated Sharpe).",
+    "id": "E04"
+  },
+  "data_mode": "DEMO",
+  "data_hash": "636e8307230d031c",
+  "is_demo": true,
+  "metrics": {
+    "n_trades": 15876,
+    "net_exp_bps": -1.1869,
+    "n_trials": 9,
+    "decision": "FRAGILE_OR_NULL",
+    "keep": false
+  },
+  "grid_table": [
+    {
+      "hold": 6,
+      "lookback": 10,
+      "n_trades": 3211,
+      "net_exp_bps": -0.2927,
+      "gross_exp_bps": 0.7918,
+      "t_stat": -0.64
+    },
+    {
+      "hold": 6,
+      "lookback": 20,
+      "n_trades": 2389,
+      "net_exp_bps": -0.6023,
+      "gross_exp_bps": 0.4811,
+      "t_stat": -1.12
+    },
+    {
+      "hold": 6,
+      "lookback": 40,
+      "n_trades": 1703,
+      "net_exp_bps": -0.758,
+      "gross_exp_bps": 0.3221,
+      "t_stat": -1.23
+    },
+    {
+      "hold": 12,
+      "lookback": 10,
+      "n_trades": 2171,
+      "net_exp_bps": -1.2754,
+      "gross_exp_bps": -0.1661,
+      "t_stat": -1.62
+    },
+    {
+      "hold": 12,
+      "lookback": 20,
+      "n_trades": 1768,
+      "net_exp_bps": -1.7352,
+      "gross_exp_bps": -0.6337,
+      "t_stat": -2.0
+    },
+    {
+      "hold": 12,
+      "lookback": 40,
+      "n_trades": 1303,
+      "net_exp_bps": -1.7163,
+      "gross_exp_bps": -0.6181,
+      "t_stat": -1.68
+    },
+    {
+      "hold": 24,
+      "lookback": 10,
+      "n_trades": 1290,
+      "net_exp_bps": -1.0845,
+      "gross_exp_bps": 0.0144,
+      "t_stat": -0.77
+    },
+    {
+      "hold": 24,
+      "lookback": 20,
+      "n_trades": 1133,
+      "net_exp_bps": -2.6813,
+      "gross_exp_bps": -1.5875,
+      "t_stat": -1.73
+    },
+    {
+      "hold": 24,
+      "lookback": 40,
+      "n_trades": 908,
+      "net_exp_bps": -1.1869,
+      "gross_exp_bps": -0.1033,
+      "t_stat": -0.68
+    }
+  ],
+  "sensitivity": {
+    "frac_positive": 0.0,
+    "median_net_bps": -1.1869,
+    "min_net_bps": -2.6813,
+    "max_net_bps": -0.2927,
+    "verdict": "FRAGILE_OR_NULL"
+  },
+  "base_experiment": "E02",
+  "row": {
+    "exp_id": "E04",
+    "run_utc": "2026-11-04T01:06:37+00:00",
+    "data_mode": "DEMO",
+    "data_hash": "636e8307230d031c",
+    "symbol": "XAUUSD",
+    "timeframe": "M5",
+    "split": "DEV",
+    "git_commit": "f70c965",
+    "git_dirty": false,
+    "evaluator_hash": "b11733ddb055",
+    "config_hash": "b48bf1725847",
+    "name": "sensitivity_E02",
+    "type": "sensitivity",
+    "strategy": "vol_breakout",
+    "params": "{\"base\": \"E02\", \"grid\": {\"hold\": [6, 12, 24], \"lookback\": [10, 20, 40]}}",
+    "baseline": null,
+    "hypothesis": "",
+    "n_trades": 15876,
+    "net_exp_bps": -1.1869,
+    "n_trials": 9,
+    "decision": "FRAGILE_OR_NULL",
+    "keep": false,
+    "duration_s": 1.22
+  }
+}

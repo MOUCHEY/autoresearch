@@ -22,6 +22,7 @@ Usage
     python experiment_runner.py --auto 2         # + jusqu'à 2 propositions automatiques
     python experiment_runner.py --only E02       # une seule expérience
     python experiment_runner.py --control positive   # contrôle positif (démo avec effet planté)
+    python experiment_runner.py --calibrate-null 10  # contrôle négatif : taux de faux positifs
     python experiment_runner.py --final-test E02 # évaluation UNIQUE sur le test verrouillé
     python experiment_runner.py --relock "raison"    # (humain) re-verrouille l'évaluateur
 """
@@ -62,7 +63,8 @@ RESULT_COLUMNS = [
     "name", "type", "strategy", "params", "baseline", "n_trials",
     "n_trades", "long_frac", "net_exp_bps", "ci_low_bps", "ci_high_bps", "gross_exp_bps",
     "gross_t_stat", "cost_bps", "t_stat", "profit_factor", "win_rate", "payoff_ratio",
-    "max_consec_losses", "trades_per_day", "max_dd_pct", "sharpe_ann", "sortino_ann",
+    "max_consec_losses", "trades_per_day", "avg_leverage", "max_dd_pct", "mc_max_dd_p95_pct",
+    "mc_loss_streak_p95", "sharpe_ann", "sortino_ann",
     "frac_folds_positive", "null_mean_bps", "p_null", "p_null_holm", "sr_trade", "dsr",
     "n_trials_cumulative",
     "stress_wide_spread_net_bps", "stress_high_slippage_net_bps", "stress_combined_net_bps",
@@ -232,18 +234,20 @@ class Lab:
               baseline_trades: pd.DataFrame | None, n_trials_this: int = 1) -> tuple[dict, dict]:
         e = self.cfg["evaluation"]
         r = self.cfg["risk"]
+        params = json.loads(exp["params"]) if isinstance(exp["params"], str) else exp["params"]
+        hold = int(params["hold"])
         eq = bt.equity_curve(trades, float(r["initial_equity"]), float(r["risk_per_trade"]),
-                             float(r["max_leverage"]))
+                             float(r["max_leverage"]), hold)
         m = ev.trade_metrics(trades, eq, int(e["annualization_days"]))
         extra: dict = {}
         if len(trades) == 0:
             return m, extra
+        m.update(ev.loss_sequence_risk(eq["ret"].to_numpy(), 500, self.seed))
         net = trades["net_bps"].to_numpy()
         boots = ev.stationary_bootstrap_means(net, int(e["n_bootstrap"]), float(e["bootstrap_block"]), self.seed)
         a = float(e["alpha"])
         m["ci_low_bps"], m["ci_high_bps"] = (float(np.quantile(boots, a / 2)), float(np.quantile(boots, 1 - a / 2)))
 
-        hold = int(json.loads(exp["params"])["hold"]) if isinstance(exp["params"], str) else int(exp["params"]["hold"])
         lb, sb, elig = self.null_pool(hold, windows)
         null = ev.random_entry_null(lb, sb, elig, trades["direction"].to_numpy(), int(e["n_null_sims"]), self.seed,
                                     self.bar_strata, self.bar_strata[trades["bar"].to_numpy()])
@@ -351,7 +355,8 @@ class Lab:
         m["decision"], m["keep"] = decision, decision == "ACCEPT_CANDIDATE"
         extra["checks"] = checks
         extra["fitted_per_fold"] = fitted
-        extra["trades_path"] = str((RUNS / exp["id"] / "trades.csv").relative_to(ROOT))
+        tp = RUNS / exp["id"] / "trades.csv"
+        extra["trades_path"] = str(tp.relative_to(ROOT)) if tp.is_relative_to(ROOT) else str(tp)
         return m, extra
 
     def _run_sensitivity(self, exp, prior):
@@ -567,6 +572,42 @@ def update_docs(lab: Lab, props: list[dict]):
 
 
 # =============================================================================
+# Contrôle négatif : taux de faux positifs du protocole
+# =============================================================================
+def calibrate_null(cfg: dict, n_worlds: int) -> int:
+    """Rejoue les expériences pré-enregistrées sur N mondes synthétiques SANS aucun
+    avantage (graines 1..N). Tout ACCEPT_CANDIDATE serait un faux positif : on mesure
+    ainsi le taux d'erreur réel du protocole, au lieu de le supposer."""
+    import contextlib
+    import io
+    global RUNS
+    out = ROOT / "runs" / "controls" / "null_worlds"
+    RUNS = out
+    rows = []
+    for seed in range(1, n_worlds + 1):
+        c = json.loads(json.dumps(cfg))
+        c["project"]["seed"] = seed
+        c["data"]["demo"]["planted_edge"] = 0.0
+        res = out / f"results_seed{seed}.csv"
+        res.unlink(missing_ok=True)
+        with contextlib.redirect_stdout(io.StringIO()):
+            lab = Lab(c, force_mode="demo", results_path=res, write_docs=False, label_suffix="_NULL_WORLD")
+            for e in c["experiments"]:
+                r = lab.run_experiment(dict(e))
+                rows.append({"seed": seed, "exp_id": e["id"], "gross_t_stat": r.get("gross_t_stat"),
+                             "net_exp_bps": r.get("net_exp_bps"), "p_null_holm": r.get("p_null_holm"),
+                             "decision": r.get("decision")})
+        print(f"  monde nul {seed}: " + ", ".join(f"{x['exp_id']}={x['decision']}" for x in rows[-3:]))
+    d = pd.DataFrame(rows)
+    d.to_csv(ROOT / "runs" / "controls" / "null_calibration.csv", index=False)
+    fp = int((d["decision"] == "ACCEPT_CANDIDATE").sum())
+    print(f"\nFaux positifs : {fp}/{len(d)} hypothèses acceptées dans des mondes SANS avantage.")
+    print(f"t brut : moyenne {d['gross_t_stat'].mean():.2f}, écart-type {d['gross_t_stat'].std():.2f}, "
+          f"min {d['gross_t_stat'].min():.2f}, max {d['gross_t_stat'].max():.2f}")
+    return 0
+
+
+# =============================================================================
 # Main
 # =============================================================================
 def main(argv=None) -> int:
@@ -576,6 +617,8 @@ def main(argv=None) -> int:
     ap.add_argument("--mode", choices=["auto", "real", "demo"], help="force le mode de données")
     ap.add_argument("--rerun", action="store_true", help="ré-exécuter même si déjà fait (compte dans le budget)")
     ap.add_argument("--control", choices=["positive"], help="contrôle positif : démo avec effet planté")
+    ap.add_argument("--calibrate-null", type=int, metavar="N",
+                    help="contrôle négatif : rejoue les expériences pré-enregistrées sur N mondes nuls")
     ap.add_argument("--final-test", metavar="EXP_ID")
     ap.add_argument("--force", action="store_true")
     ap.add_argument("--allow-retest", action="store_true")
@@ -589,6 +632,8 @@ def main(argv=None) -> int:
 
     cfg = load_config(ROOT / "research_config.yaml")
     np.random.seed(int(cfg["project"]["seed"]))
+    if args.calibrate_null:
+        return calibrate_null(cfg, args.calibrate_null)
     results_path, write_docs, mode, suffix = RESULTS, True, args.mode, ""
     if args.control == "positive":
         cfg["data"]["demo"]["planted_edge"] = float(cfg["data"]["demo"].get("positive_control_edge", 0.3))
