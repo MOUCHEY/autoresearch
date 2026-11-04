@@ -1,0 +1,174 @@
+# =============================================================================
+# AutoResearch Biology V1 — Configuration de recherche (pré-enregistrement)
+# =============================================================================
+# Ce fichier est la "source de vérité" du laboratoire. Il décrit :
+#   1. la question scientifique,
+#   2. les données (et leur empreinte SHA-256 pour la reproductibilité),
+#   3. le protocole d'évaluation (FIGÉ avant de voir les résultats),
+#   4. le budget de calcul,
+#   5. la file d'expériences (une hypothèse = un changement).
+#
+# RÈGLE D'OR : on ne modifie JAMAIS la section `protocol` pour améliorer un
+# score. Si le protocole doit évoluer, on crée une nouvelle mission (M2...) et
+# on l'explique dans research_memory.md.
+# =============================================================================
+
+project:
+  name: "AutoResearch Biology V1"
+  mission_id: "M1-solubilite-ESOL"
+  question: >
+    Peut-on prédire la solubilité aqueuse (log10 mol/L) d'une molécule
+    à partir de sa seule structure chimique 2D (SMILES) ?
+
+data:
+  name: "ESOL (Delaney 2004), version MoleculeNet/DeepChem"
+  url: "https://deepchemdata.s3-us-west-1.amazonaws.com/datasets/delaney-processed.csv"
+  local_path: "data/raw/delaney-processed.csv"
+  sha256: "8c06a76f0c6487d29ab0f903e6a7a7139f189ab3c1178f159c8be8964602f189"
+  id_column: "Compound ID"
+  smiles_column: "smiles"
+  target_column: "measured log solubility in mols per litre"
+  target_unit: "log10(mol/L)"
+  # Prédictions publiées par Delaney (équation ESOL). Utilisées UNIQUEMENT comme
+  # point de comparaison "littérature", jamais comme variable d'entrée.
+  literature_prediction_column: "ESOL predicted log solubility in mols per litre"
+  plausible_target_range: [-15.0, 3.0]   # garde-fou contre les erreurs d'unité
+  deduplication:
+    # Deux lignes sont "la même molécule" si elles ont la même connectivité
+    # (14 premiers caractères de l'InChIKey). Nos représentations 2D ne voient
+    # pas la stéréochimie : des stéréoisomères seraient donc des doublons
+    # invisibles entre entraînement et test.
+    key: "inchikey_connectivity"
+    aggregate: "mean"
+    # Si les valeurs mesurées d'un groupe divergent de plus de 0.5 log, le
+    # groupe est ambigu (ex. deux diastéréoisomères différents) : on l'exclut.
+    max_spread_log_units: 0.5
+
+protocol:
+  split_types: ["random", "scaffold"]   # aléatoire vs échafaudage de Bemis-Murcko
+  seeds: [0, 1, 2, 3, 4]                # 5 découpages par type -> variabilité
+  fractions: {train: 0.8, valid: 0.1, test: 0.1}
+  selection_set: "valid"                # le TEST est verrouillé pendant la boucle
+  primary_metric: "rmse"                # métriques rapportées : mae, rmse, r2
+  decision_rule:
+    # Une modification est CONSERVÉE seulement si, sur les 10 paires
+    # (5 graines x 2 types de split) évaluées en VALIDATION :
+    #   - le RMSE moyen baisse d'au moins `min_delta_rmse` (effet pratique), ET
+    #   - le RMSE baisse dans au moins `min_win_fraction` des paires (robustesse).
+    min_delta_rmse: 0.02
+    min_win_fraction: 0.8
+
+budget:
+  max_experiments: 10              # V1 : 10 expériences maximum
+  max_seconds_per_experiment: 600  # 10 min par expérience (iMac 2017, CPU)
+  max_total_seconds: 3600          # 1 h de calcul au total pour la mission
+  n_jobs: 4                        # 4 coeurs (iMac 2017)
+  cloud_allowed: false             # aucun calcul payant sans accord explicite
+
+# -----------------------------------------------------------------------------
+# File d'expériences.
+#   base: null      -> configuration complète donnée dans `config`
+#   base: champion  -> on part du meilleur modèle actuel et on applique `change`
+# Chaque expérience ne modifie qu'UNE chose par rapport à sa base.
+# -----------------------------------------------------------------------------
+experiments:
+  - id: E01
+    title: "Référence naïve : prédire la moyenne"
+    hypothesis: >
+      Sans aucune information structurale, l'erreur est égale à la dispersion
+      des données (≈ écart-type). Toute méthode utile doit faire mieux.
+    justification: "Principe méthodologique : un modèle doit battre la référence triviale."
+    base: null
+    config: {features: [], model: mean, params: {}}
+
+  - id: E02
+    title: "Régression linéaire sur logP seul"
+    hypothesis: >
+      La lipophilie (logP de Crippen) explique à elle seule une grande partie de
+      la solubilité : plus une molécule est lipophile, moins elle est soluble.
+    justification: >
+      Equation générale de solubilité (Ran & Yalkowsky 2001) : log S dépend de
+      logP et du point de fusion ; Delaney 2004 : logP est le descripteur le
+      plus important d'ESOL.
+    base: champion
+    change: {features: [logp], model: linear, params: {}}
+
+  - id: E03
+    title: "Reproduction de la forme ESOL (4 descripteurs, linéaire)"
+    hypothesis: >
+      Ajouter la masse molaire, les liaisons rotatives et la proportion
+      aromatique (les 4 descripteurs d'ESOL) améliore la régression linéaire.
+    justification: "Delaney 2004 : équation ESOL à 4 descripteurs."
+    base: champion
+    change: {features: [esol4]}
+
+  - id: E04
+    title: "Premier Random Forest (mêmes 4 descripteurs)"
+    hypothesis: >
+      Un modèle non linéaire (forêt aléatoire) capture des interactions entre
+      descripteurs que la régression linéaire ne voit pas.
+    justification: "Breiman 2001 ; usage standard en QSPR (ex. Palmer & Mitchell 2014)."
+    base: champion
+    change: {model: random_forest, params: {n_estimators: 500, min_samples_leaf: 1, max_features: 1.0}}
+
+  - id: E05
+    title: "Descripteurs physico-chimiques étendus (19 descripteurs)"
+    hypothesis: >
+      Ajouter polarité (TPSA), liaisons hydrogène, cycles, halogènes, etc.
+      fournit une information complémentaire au logP.
+    justification: "Delaney 2004 testait 9 propriétés ; la solubilité dépend aussi des interactions polaires."
+    base: champion
+    change: {features: [physchem]}
+
+  - id: E06
+    title: "Empreintes de Morgan seules (ECFP4, 2048 bits) à la place des descripteurs"
+    hypothesis: >
+      La présence/absence de sous-structures suffit à prédire la solubilité.
+      (Prédiction a priori : moins bon, car la solubilité est une propriété
+      globale et additive mal décrite par des bits binaires.)
+    justification: "Rogers & Hahn 2010 (ECFP) ; MoleculeNet (Wu et al. 2018) l'utilise comme représentation de référence."
+    base: champion
+    change: {features: [morgan2_2048]}
+
+  - id: E07
+    title: "Descripteurs + empreintes de Morgan combinés"
+    hypothesis: >
+      Les empreintes apportent une information locale (groupes fonctionnels)
+      complémentaire aux descripteurs globaux.
+    justification: "Résultat attendu de E05/E06 ; combinaison fréquente en QSAR."
+    base: champion
+    change: {features_add: [morgan2_2048]}
+
+  - id: E08
+    title: "Ensemble complet des descripteurs RDKit 2D (~217)"
+    hypothesis: >
+      Un ensemble large de descripteurs contient des informations utiles
+      absentes de notre sélection manuelle.
+    justification: "Pratique courante (ex. AqSolDB fournit des descripteurs 2D ; Yang et al. 2019 utilisent des descripteurs RDKit)."
+    base: champion
+    change: {features: [rdkit_all]}
+
+  - id: E09
+    title: "Réglage des hyperparamètres de la forêt (validation croisée interne)"
+    hypothesis: >
+      Limiter la profondeur effective des arbres (min_samples_leaf) et le
+      nombre de variables par division (max_features) réduit le surapprentissage.
+    justification: >
+      Le réglage est fait UNIQUEMENT par validation croisée interne sur
+      l'ensemble d'entraînement (groupée par échafaudage pour le split scaffold).
+    base: champion
+    change:
+      model: random_forest_tuned
+      params:
+        n_estimators: 300
+        grid: {min_samples_leaf: [1, 3], max_features: [0.33, 1.0]}
+        inner_folds: 3
+
+  - id: E10
+    title: "Gradient boosting (HistGradientBoosting) à la place de la forêt"
+    hypothesis: >
+      Le boosting, qui corrige séquentiellement les erreurs, est plus précis que
+      la forêt aléatoire sur des données tabulaires de cette taille.
+    justification: "Algorithme alternatif courant ; XGBoost figure parmi les références de MoleculeNet."
+    base: champion
+    change: {model: hist_gradient_boosting, params: {max_iter: 500, learning_rate: 0.05, min_samples_leaf: 10}}

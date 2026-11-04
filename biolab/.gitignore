@@ -1,0 +1,9 @@
+# Environnement Python local
+.venv/
+__pycache__/
+.pytest_cache/
+
+# Données brutes : téléchargées automatiquement (empreinte SHA-256 vérifiée),
+# non redistribuées dans le dépôt (voir data/PROVENANCE.md).
+data/raw/
+data/cache/

@@ -1,0 +1,9 @@
+# Dépendances directes du laboratoire (versions exactes, choisies pour avoir
+# des "wheels" précompilées pour macOS Intel x86_64 + Python 3.12).
+rdkit==2025.9.3        # DERNIÈRE version RDKit avec wheels macOS Intel (vérifié sur PyPI)
+numpy==2.3.5
+pandas==2.3.3
+scikit-learn==1.7.2
+matplotlib==3.10.7
+pyyaml==6.0.3
+pytest==8.4.2
