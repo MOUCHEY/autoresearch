@@ -177,3 +177,21 @@ def test_mt5_reader_converts_to_utc_and_points(tmp_path):
     df = read_price_file(f, "auto", utc_offset_hours=2, point_size=0.01)
     assert str(df.index[0]) == "2024-01-02 01:00:00+00:00"
     assert df["spread"].iloc[0] == pytest.approx(0.25)
+
+
+def test_http_get_stops_immediately_on_429(monkeypatch):
+    """Un refus explicite du fournisseur (429) doit arrêter le téléchargement, pas déclencher
+    une rafale de nouvelles tentatives."""
+    import io
+    import urllib.error
+    import data_loader as dl
+    calls = []
+
+    def fake_urlopen(req, timeout=30):
+        calls.append(req.full_url)
+        raise urllib.error.HTTPError(req.full_url, 429, "Too Many Requests", {}, io.BytesIO(b'{"error": "x"}'))
+    monkeypatch.setattr(dl.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(dl.time, "sleep", lambda s: pytest.fail("ne doit pas attendre puis réessayer"))
+    with pytest.raises(dl.DataSourceRefused):
+        dl._http_get("https://example.invalid/x.bi5")
+    assert len(calls) == 1

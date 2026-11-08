@@ -383,8 +383,15 @@ def decode_bi5_candles(blob: bytes, day: pd.Timestamp, divisor: float) -> pd.Dat
     return pd.DataFrame({"open": o, "high": h, "low": l, "close": c, "volume": a["v"].astype(float)}, index=idx)
 
 
+class DataSourceRefused(RuntimeError):
+    """Le fournisseur refuse le téléchargement automatisé : on s'arrête au lieu d'insister."""
+
+
 def _http_get(url: str, retries: int = 4) -> bytes | None:
+    """GET poli : 404 = pas de données ce jour-là ; 429 = refus explicite -> arrêt immédiat ;
+    503 / erreurs réseau = attente longue (Retry-After si fourni, sinon 30 s, 60 s, 120 s...)."""
     for k in range(retries):
+        wait = 30 * 2 ** k
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "quantlab-research/1.0"})
             with urllib.request.urlopen(req, timeout=30) as resp:
@@ -392,18 +399,31 @@ def _http_get(url: str, retries: int = 4) -> bytes | None:
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 return None
+            if e.code == 429:
+                body = e.read(500).decode("utf-8", "replace")
+                raise DataSourceRefused(
+                    f"{url} -> 429 Too Many Requests : {body.strip()}\n"
+                    "Dukascopy oriente désormais l'accès automatisé en masse vers un stockage S3 « Requester "
+                    "Pays » (frais AWS à ta charge) : https://wiki.dukascopy.com/en/development/data-export/ . "
+                    "Ne pas insister ; utiliser un export MT5 ou décider explicitement de la voie S3.") from e
+            ra = e.headers.get("Retry-After") if e.headers else None
+            if ra and ra.isdigit():
+                wait = max(wait, int(ra))
         except (urllib.error.URLError, TimeoutError, ConnectionError):
             pass
-        time.sleep(2 ** (k + 1))
-    raise ConnectionError(f"échec du téléchargement : {url}")
+        if k < retries - 1:
+            time.sleep(wait)
+    raise ConnectionError(f"échec du téléchargement après {retries} essais : {url}")
 
 
-def fetch_dukascopy(symbol: str, start: str, end: str, out_path: Path, pause_s: float = 0.2) -> Path:
+def fetch_dukascopy(symbol: str, start: str, end: str, out_path: Path, pause_s: float = 1.0) -> Path:
     """Télécharge les bougies M1 BID et ASK, en déduit prix médian et spread, écrit un CSV.
 
     Reprise possible : un cache mensuel est conservé dans data/dukascopy/{symbol}/.
-    Respecte le serveur (requêtes séquentielles + pause). Données gratuites ; vérifie
-    les conditions d'utilisation de Dukascopy avant tout usage autre que personnel.
+    Respecte le serveur (requêtes séquentielles, 1 s entre deux requêtes, arrêt net sur 429).
+    ATTENTION (constaté le 2026-11-08) : depuis un serveur cloud, datafeed.dukascopy.com a
+    répondu 429 puis 503, en renvoyant vers un accès S3 « Requester Pays » (payant, compte
+    AWS requis). Vérifie les conditions d'utilisation de Dukascopy avant tout usage.
     """
     divisor = PRICE_DIVISOR.get(symbol)
     if divisor is None:

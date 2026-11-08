@@ -27,7 +27,10 @@ Pic mémoire mesuré : environ 0,5 Go. Tes 32 Go laissent une marge énorme.
 
 ## 2. Données réelles
 
-Trois options, de la plus simple à la plus fiable pour toi :
+Trois options. **Constaté le 2026-11-08** : depuis un serveur cloud, Dukascopy a refusé le
+téléchargement automatisé (429 puis 503) et renvoie vers un accès S3 « Requester Pays »
+(compte AWS, frais à ta charge). Depuis ton iMac, cela peut fonctionner ou non. L'export MT5
+est la voie la plus sûre.
 
 | Option | Commande / action | Spread réel ? |
 |---|---|---|
