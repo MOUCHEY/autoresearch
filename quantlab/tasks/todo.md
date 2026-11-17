@@ -1,5 +1,14 @@
 # QuantLab — suivi et relais entre sessions
 
+## RELAIS — 2026-11-18 00:05
+
+- Le téléchargement du 17/11 à 13 h 38 est **mort avec la session** (journal vide, seul 2024-01 en cache).
+- Relancé **détaché** à 23 h 57 (PPID 1, propre groupe de processus, `caffeinate` actif) :
+  `cd ~/autoresearch-quantlab/quantlab && perl -MPOSIX -e 'POSIX::setsid(); exec @ARGV' nohup caffeinate -i .venv/bin/python -u data_loader.py fetch --start 2023-01-01 --end 2026-10-31 >> data/fetch.log 2>&1 < /dev/null &`
+  État : `pgrep -fl "data_loader.py fetch"` · progression : `tail data/fetch.log` (une ligne par mois) · arrêt : `pkill -f "data_loader.py fetch"`.
+- `datafeed.dukascopy.com` pointe désormais vers `datafeed.cloud.dukascopy.com` (EC2 Zurich) : réponse 200 directe, aucune redirection S3, aucun identifiant AWS envoyé → aucun frais possible.
+- Prédictions écrites AVANT les données réelles : `research_memory.md` § 6.
+
 ## RELAIS — 2026-11-17 13:40 (session Mac, reprise du labo cloud)
 
 - **Fait** : étape 1, commit `4b929df`, avec artefacts dans `runs/<data_hash>/` et garde du test final sur une période réelle déjà vue ; 19/19 tests ; `verify_lock` intact, empreinte évaluateur `14a493d542ad`. Mois test 2024-01 validé : 30 268 M1, clôtures 2 002–2 079, spread médian 0,32 USD, 0 barre OHLC incohérente ; le trou du 15/01 correspond au jour férié MLK, les rendements extrêmes aux annonces NFP du 05/01 et CPI du 11/01.

@@ -68,6 +68,24 @@ on y **ajoute**.
 3. La structure du marché réel (autocorrélation, ratio de variance par session) justifie-t-elle
    la famille A (momentum) ou plutôt la famille B (retour à la moyenne) ?
 
+## 6. Prédictions écrites AVANT les données réelles (2026-11-18, 00 h 05, avant tout run réel)
+
+Écrites et commitées avant le premier run sur XAUUSD réel (Dukascopy, 2023-01 → 2026-10), pour qu'on
+puisse vérifier après coup qu'on ne réinterprète pas les résultats. Seul le mois de janvier 2024 a été
+regardé (contrôle du décodeur), aucune stratégie n'y a été appliquée.
+
+1. **Coûts plus élevés qu'en démo.** Mesuré sur janvier 2024 : spread médian 0,32 USD (démo : 0,18), donc
+   un aller-retour ≈ 0,32 + 2 × 0,05 + 0,07 = 0,49 USD ≈ **2,4 bps** au prix de 2 030 USD (démo : ≈ 1,07 bp).
+   Comme le coût est fixe en USD, il baisse en bps quand l'or monte (≈ 1,6 bps à 3 000 USD). Prédiction :
+   `cost_bps` de E01 entre 1,3 et 2,5.
+2. **E01, E02, E03 : REJECT.** Prédiction : |t brut| < 2 pour les trois, et une espérance nette ≈ espérance
+   brute − coût, donc négative. Ce qui me ferait changer d'avis : un t brut > 2 avec un IC net au-dessus de 0
+   et un p de Holm < 0,05 face aux entrées aléatoires.
+3. **Sens** : les achats feront mieux que les ventes à cause de la forte hausse de l'or sur la période
+   (dérive, pas un signal). Le test des entrées aléatoires de même ratio achat/vente doit neutraliser cet effet.
+4. **Propositions automatiques** : si (2) se vérifie, `propose_next` proposera d'abord la sensibilité de E02
+   (9 essais), puis le « fade » (famille B), qui devrait lui aussi être rejeté.
+
 ---
 
 <!-- AUTO:START -->
