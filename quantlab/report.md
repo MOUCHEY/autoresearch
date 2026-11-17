@@ -35,7 +35,7 @@ Trois enseignements, valables au-delà de la démo :
 3. **Un effet réel peut disparaître au test final** si le régime qui le porte change (§6.2).
    Un backtest ne valide jamais un effet pour toujours.
 
-![Synthèse des décisions](runs/fig_ci_summary.png)
+![Synthèse des décisions](runs/fig_demo_controls.png)
 
 ## 2. Question de recherche
 
@@ -128,7 +128,7 @@ pli 4 : train = blocs 0-3       -> validation bloc 4 (2024-10-18 -> 2025-04-01)
 | Pertes consécutives max / MC p95 | 16 / 17 | 11 / 14 | 9 / 15 |
 | **Décision** | **REJECT** | **REJECT** | **REJECT** |
 
-![Trajectoires cumulées](runs/fig_cumulative_net.png)
+![Trajectoires cumulées](runs/636e8307230d031c/fig_cumulative_net.png)
 
 **Lecture.** Le panneau « brut » oscille autour de zéro : il n'y a pas de signal, comme prévu.
 Le panneau « net » descend régulièrement : c'est le coût. E01 trade le plus, donc il descend le
@@ -189,7 +189,7 @@ niveau absolu : il filtrait « à côté » du vrai mécanisme.
 **Leçon.** Un effet réel, robuste et significatif en développement peut ne pas être exploitable
 plus tard, si le régime qui le porte disparaît (cf. Cederburg et al. 2020 sur l'écart entre
 échantillon et hors échantillon). Le test final a fait son travail : il a empêché de déployer
-une stratégie au mauvais moment. Il a été utilisé **une seule fois** (`runs/controls/test_access.json`).
+une stratégie au mauvais moment. Il a été utilisé **une seule fois** (`runs/9b676b54c4a5ed3d/test_access.json`).
 
 ## 7. Ce que l'on peut conclure, et ce que l'on ne peut pas conclure
 
@@ -232,7 +232,7 @@ une stratégie au mauvais moment. Il a été utilisé **une seule fois** (`runs/
 
 ```bash
 cd quantlab
-python -m pytest -q                          # 15 tests anti-fuite / exécution / protocole
+python -m pytest -q                          # 19 tests anti-fuite / exécution / protocole / traçabilité
 python experiment_runner.py --mode demo --auto 2   # E01-E03 + sensibilité (monde nul)
 python experiment_runner.py --control positive --auto 1
 python experiment_runner.py --calibrate-null 10

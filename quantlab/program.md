@@ -25,7 +25,8 @@ l'entraînement de LLM : il programme l'**organisation de recherche**, pas le co
 - Modifier `evaluation.py` ou `backtest.py` pour améliorer un score. Un changement de protocole
   se justifie par écrit, intervient **avant** les expériences concernées et passe par
   `--relock "raison"` après relecture humaine.
-- Utiliser le test final pendant l'optimisation, ou le réutiliser (`runs/test_access.json`).
+- Utiliser le test final pendant l'optimisation, ou le réutiliser (`runs/<data_hash>/test_access.json` ; une période réelle déjà testée reste refusée
+  même si le fichier de données change de hash).
 - Réécrire ou supprimer une ligne de `results.csv`. Une expérience refaite = une nouvelle ligne.
 - Inverser le signe d'une stratégie perdante, ou garder la meilleure case d'une grille, sans
   la déclarer comme nouvel essai.
@@ -41,10 +42,12 @@ l'entraînement de LLM : il programme l'**organisation de recherche**, pas le co
 2. Choisir UNE hypothèse ; l'écrire dans research_config.yaml ; commit
 3. python -m pytest -q      (doit passer)
 4. python experiment_runner.py --only <ID>
-5. Lire runs/<ID>/summary.json : checks, by_fold, by_session, by_vol_tercile, stress
+5. Lire runs/<data_hash>/<ID>/summary.json : checks, by_fold, by_session, by_vol_tercile, stress
 6. Conserver (ACCEPT_CANDIDATE) ou rejeter ; consigner la leçon dans research_memory.md ; commit
 7. Recommencer tant que le budget le permet, puis écrire report.md et S'ARRÊTER
 ```
 
 **Critère de simplicité** : à résultat égal, la version la plus simple gagne. Un gain non
 significatif qui ajoute de la complexité est rejeté.
+
+> Consignes permanentes de Jeunathan : [`tasks/consignes-jeunathan.md`](tasks/consignes-jeunathan.md).

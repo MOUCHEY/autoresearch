@@ -195,3 +195,110 @@ def test_http_get_stops_immediately_on_429(monkeypatch):
     with pytest.raises(dl.DataSourceRefused):
         dl._http_get("https://example.invalid/x.bi5")
     assert len(calls) == 1
+
+
+# ----------------------------------------------------------------------------- traçabilité par jeu
+def _small_cfg(seed):
+    """Petit monde DÉMO (3 mois) pour tester le runner en quelques secondes."""
+    import copy
+    from data_loader import load_config
+    cfg = copy.deepcopy(load_config(ROOT / "research_config.yaml"))
+    cfg["project"]["seed"] = seed
+    cfg["data"]["min_bars"] = 1000
+    cfg["data"]["demo"].update(start="2024-01-01", end="2024-03-31", planted_edge=0.0)
+    cfg["features"] = dict(FEAT_CFG)
+    cfg["evaluation"].update(n_bootstrap=200, n_null_sims=100)
+    return cfg
+
+
+def test_artifacts_and_test_access_are_separated_by_dataset(tmp_path):
+    """Deux jeux de données n'écrivent jamais dans le même dossier : un run sur données réelles
+    ne peut ni écraser les artefacts démo, ni relire la spécification démo d'un même identifiant
+    (E04...), et le test final reste à usage unique PAR jeu."""
+    import contextlib
+    import io
+    import json
+    import experiment_runner as er
+    runs, res = tmp_path / "runs", tmp_path / "results.csv"
+    labs = []
+    for seed in (1, 2):
+        cfg = _small_cfg(seed)
+        with contextlib.redirect_stdout(io.StringIO()):
+            lab = er.Lab(cfg, force_mode="demo", results_path=res, write_docs=False, runs_root=runs)
+            lab.run_experiment(dict(cfg["experiments"][0]))
+        labs.append(lab)
+    a, b = labs
+    assert a.md.data_hash != b.md.data_hash
+    for lab in labs:
+        d = runs / lab.md.data_hash / "E01"
+        assert json.loads((d / "summary.json").read_text())["data_hash"] == lab.md.data_hash
+        assert (d / "trades.csv").exists()
+    assert not (runs / "E01").exists()
+    # une expérience proposée sur un jeu n'est retrouvée que sur ce jeu
+    spec = {"id": "E09", "strategy": "breakout", "params": {"lookback": 20, "hold": 12, "mode": "fade"}}
+    (a.run_dir / "E09").mkdir()
+    (a.run_dir / "E09" / "summary.json").write_text(json.dumps({"experiment": spec}))
+    assert a._find_spec("E09") == spec
+    with pytest.raises(KeyError):
+        b._find_spec("E09")
+    # test final : trace dans le dossier du jeu, refus d'une 2e utilisation, l'autre jeu intact
+    with contextlib.redirect_stdout(io.StringIO()):
+        a.final_test("E01", force=True)
+    acc = json.loads((a.run_dir / "test_access.json").read_text())
+    assert acc["data_hash"] == a.md.data_hash and acc["test_start"] < acc["test_end"]
+    assert not (b.run_dir / "test_access.json").exists()
+    with pytest.raises(SystemExit):
+        a.final_test("E01", force=True)
+
+
+def test_final_test_refuses_real_period_already_seen(tmp_path):
+    """Retélécharger les mêmes prix change le hash : la période de test d'un test final RÉEL
+    déjà utilisé doit quand même être refusée. Les traces DÉMO (dates fictives) sont ignorées."""
+    import json
+    import experiment_runner as er
+
+    def trace(h, **kw):
+        (tmp_path / h).mkdir()
+        (tmp_path / h / "test_access.json").write_text(json.dumps({"exp_id": "E02", "data_hash": h, **kw}))
+    trace("aaaa", data_mode="REAL", symbol="XAUUSD",
+          test_start="2025-12-01 00:00:00+00:00", test_end="2026-10-30 20:55:00+00:00")
+    trace("bbbb", forced=False)                                   # ancien format, monde DÉMO
+    trace("cccc", data_mode="DEMO", symbol="XAUUSD", test_start="2026-01-01", test_end="2026-06-01")
+    clash = er.test_window_conflicts(tmp_path, "XAUUSD", "2026-01-05 00:00:00+00:00",
+                                     "2026-11-27 20:55:00+00:00", "dddd")
+    assert [c["data_hash"] for c in clash] == ["aaaa"]
+    assert er.test_window_conflicts(tmp_path, "XAUUSD", "2023-01-01", "2024-01-01", "dddd") == []
+    assert er.test_window_conflicts(tmp_path, "GBPUSD", "2026-01-05", "2026-11-27", "dddd") == []
+    assert er.test_window_conflicts(tmp_path, "XAUUSD", "2026-01-05", "2026-11-27", "aaaa") == []
+    trace("eeee", data_mode="REAL", symbol="XAUUSD")              # période inconnue -> prudence
+    assert "eeee" in [c["data_hash"] for c in
+                      er.test_window_conflicts(tmp_path, "XAUUSD", "2023-01-01", "2024-01-01", "dddd")]
+
+
+def _rows(h, mode, net):
+    return {"exp_id": "E01", "split": "DEV", "data_mode": mode, "data_hash": h, "name": "baseline_breakout",
+            "n_trades": 500, "net_exp_bps": net, "ci_low_bps": net - 1, "ci_high_bps": net + 1, "decision": "REJECT"}
+
+
+def test_figures_and_docs_keep_demo_and_real_apart(tmp_path):
+    """Après un run réel, les chiffres réels ne doivent jamais apparaître sous une étiquette DÉMO
+    (et inversement), et le tableau démo ne doit pas disparaître des documents."""
+    import experiment_runner as er
+    import figures
+    df = pd.DataFrame([_rows("demohash", "DEMO", -1.8), _rows("realhash", "REAL", 0.4)])
+    assert figures.data_label("DEMO_POSITIVE_CONTROL") == "DÉMO" and figures.data_label("REAL") == "RÉEL"
+    out = figures.dataset_figures(df, tmp_path, mode="real")
+    assert list(out) == ["realhash"] and (tmp_path / "realhash" / "fig_ci.png").exists()
+    assert out["realhash"][0][1].startswith("RÉEL") and not (tmp_path / "demohash").exists()
+    out = figures.dataset_figures(df, tmp_path, data_hash="demohash")
+    assert list(out) == ["demohash"] and out["demohash"][0][1].startswith("DÉMO")
+    # synthèse des contrôles : le « monde nul » ne lit que les lignes DÉMO
+    pos = pd.DataFrame([_rows("poshash", "DEMO_POSITIVE_CONTROL", 1.5)])
+    title = figures.demo_controls_figure(df, pos, tmp_path / "ctl.png")
+    assert title.startswith("DÉMO")
+    # documents : un tableau par jeu, chacun avec sa propre étiquette
+    md = er.results_by_dataset(df)
+    demo_part, real_part = md.split("`realhash`")
+    assert "`demohash` — DÉMO" in demo_part and er.DEMO_WARNING in demo_part and "-1.800" in demo_part
+    assert "— RÉEL" in real_part and er.REAL_NOTE in real_part and er.DEMO_WARNING not in real_part
+    assert "0.400" in real_part and "-1.800" not in real_part

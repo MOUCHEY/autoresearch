@@ -14,7 +14,12 @@ Cycle d'une expérience
  7. proposition automatique de la prochaine expérience (research_memory.md)
 
 Le jeu de TEST FINAL n'est jamais utilisé ici, sauf commande explicite --final-test,
-utilisable une seule fois (trace dans runs/test_access.json).
+utilisable une seule fois par jeu de données (trace dans runs/<data_hash>/test_access.json),
+et refusé si un test final sur données RÉELLES du même symbole a déjà couvert la même période.
+
+Artefacts : runs/<data_hash>/<exp_id>/ (summary.json, trades.csv). Chaque jeu de données a
+son dossier : un run sur de nouvelles données n'écrase jamais ceux d'un autre jeu, et un
+identifiant proposé automatiquement (E04...) ne désigne qu'une expérience par jeu.
 
 Usage
 -----
@@ -55,7 +60,8 @@ RUNS = ROOT / "runs"
 RESULTS = ROOT / "results.csv"
 MEMORY = ROOT / "research_memory.md"
 REPORT = ROOT / "report.md"
-TEST_ACCESS = RUNS / "test_access.json"
+DEMO_WARNING = "> **MODE DÉMO — données synthétiques. Aucun chiffre ci-dessous n'est un résultat de marché réel.**"
+REAL_NOTE = "> **Données historiques RÉELLES.**"
 
 RESULT_COLUMNS = [
     "exp_id", "run_utc", "data_mode", "data_hash", "symbol", "timeframe", "split",
@@ -95,6 +101,37 @@ def load_results(path: Path) -> pd.DataFrame:
     if path.exists() and path.stat().st_size > 0:
         return pd.read_csv(path)
     return pd.DataFrame(columns=RESULT_COLUMNS)
+
+
+def is_demo_mode(data_mode) -> bool:
+    return str(data_mode).upper().startswith("DEMO")
+
+
+def test_window_conflicts(runs_root: Path, symbol: str, test_start: str, test_end: str,
+                          data_hash: str) -> list[dict]:
+    """Tests finaux déjà utilisés sur données RÉELLES du même symbole dont la période chevauche
+    [test_start, test_end].
+
+    Pourquoi : la trace d'accès est rangée par jeu de données (runs/<data_hash>/). Retélécharger
+    les mêmes prix avec un mois de plus change le hash ; sans cette vérification, le test final
+    redeviendrait « neuf » alors que la période de marché a déjà été vue. Les mondes DÉMO sont
+    synthétiques et indépendants : leurs dates ne désignent aucun marché, ils sont ignorés.
+    Une trace RÉELLE sans période connue est comptée comme conflit (prudence)."""
+    def utc(x) -> pd.Timestamp:
+        t = pd.Timestamp(x)
+        return t.tz_localize("UTC") if t.tzinfo is None else t.tz_convert("UTC")
+    lo, hi = utc(test_start), utc(test_end)
+    out = []
+    for p in sorted(Path(runs_root).glob("*/test_access.json")):
+        d = json.loads(p.read_text())
+        if d.get("data_hash") == data_hash or d.get("symbol", symbol) != symbol:
+            continue
+        if not str(d.get("data_mode", "")).upper().startswith("REAL"):
+            continue
+        s, e = d.get("test_start"), d.get("test_end")
+        if s is None or e is None or (utc(s) <= hi and utc(e) >= lo):
+            out.append({**d, "path": str(p)})
+    return out
 
 
 def append_result(path: Path, row: dict) -> None:
@@ -140,7 +177,7 @@ def time_limit(seconds: int):
 # =============================================================================
 class Lab:
     def __init__(self, cfg: dict, force_mode: str | None = None, results_path: Path = RESULTS,
-                 write_docs: bool = True, label_suffix: str = ""):
+                 write_docs: bool = True, label_suffix: str = "", runs_root: Path = RUNS):
         self.cfg = cfg
         self.results_path = results_path
         self.write_docs = write_docs
@@ -154,6 +191,10 @@ class Lab:
         t0 = time.time()
         self.md = load_market_data(cfg, ROOT, force_mode)
         self.mode = self.md.label + label_suffix
+        # Un dossier par jeu de données : runs/<data_hash>/<exp_id>/ et runs/<data_hash>/test_access.json
+        self.runs_root = Path(runs_root)
+        self.run_dir = self.runs_root / self.md.data_hash
+        self.test_access = self.run_dir / "test_access.json"
         self.bars = self.md.bars
         self.feats = build_features(self.bars, cfg["features"])
         v = cfg["validation"]
@@ -187,6 +228,8 @@ class Lab:
             print("  DONNÉES HISTORIQUES RÉELLES")
         print(line)
         print(f"  {self.md.symbol} {self.md.timeframe} | source={self.md.source} | hash={self.md.data_hash}")
+        rd = self.run_dir.relative_to(ROOT) if self.run_dir.is_relative_to(ROOT) else self.run_dir
+        print(f"  artefacts : {rd}/")
         print(f"  {len(b):,} barres du {b.index[0]} au {b.index[-1]} (chargement {dt:.1f} s)")
         for w in self.md.quality.get("warnings", []):
             print(f"  [qualité] {w}")
@@ -333,7 +376,7 @@ class Lab:
             row["strategy"] = exp.get("strategy")
             row["params"] = json.dumps({"base": exp.get("base"), "grid": exp.get("grid")}, sort_keys=True)
         row["duration_s"] = round(time.time() - t0, 2)
-        out = RUNS / exp["id"]
+        out = self.run_dir / exp["id"]
         out.mkdir(parents=True, exist_ok=True)
         summary["row"] = row
         (out / "summary.json").write_text(json.dumps(summary, indent=2, default=str, ensure_ascii=False))
@@ -346,8 +389,9 @@ class Lab:
 
     def _run_single(self, exp, prior):
         trades, fitted = self.walk_forward(exp["strategy"], exp["params"])
-        (RUNS / exp["id"]).mkdir(parents=True, exist_ok=True)
-        trades.to_csv(RUNS / exp["id"] / "trades.csv", index=False)
+        tp = self.run_dir / exp["id"] / "trades.csv"
+        tp.parent.mkdir(parents=True, exist_ok=True)
+        trades.to_csv(tp, index=False)
         base_trades = None
         if exp.get("baseline"):
             bspec = self._find_spec(exp["baseline"])
@@ -357,7 +401,6 @@ class Lab:
         m["decision"], m["keep"] = decision, decision == "ACCEPT_CANDIDATE"
         extra["checks"] = checks
         extra["fitted_per_fold"] = fitted
-        tp = RUNS / exp["id"] / "trades.csv"
         extra["trades_path"] = str(tp.relative_to(ROOT)) if tp.is_relative_to(ROOT) else str(tp)
         return m, extra
 
@@ -383,9 +426,17 @@ class Lab:
 
     # ------------------------------------------------------------------ test final
     def final_test(self, exp_id: str, force: bool = False, allow_retest: bool = False) -> dict:
-        if TEST_ACCESS.exists() and not allow_retest:
-            raise SystemExit(f"Le test final a déjà été utilisé ({TEST_ACCESS.read_text().strip()}). "
+        if self.test_access.exists() and not allow_retest:
+            raise SystemExit(f"Le test final a déjà été utilisé ({self.test_access.read_text().strip()}). "
                              "Le réutiliser le contaminerait. --allow-retest pour forcer (sera tracé).")
+        dev, test = self.splits.dev, self.splits.test
+        test_start, test_end = str(self.bars.index[test[0]]), str(self.bars.index[test[1] - 1])
+        if not self.md.is_demo and not allow_retest:
+            clash = test_window_conflicts(self.runs_root, self.md.symbol, test_start, test_end, self.md.data_hash)
+            if clash:
+                raise SystemExit("Période de test déjà vue sur données réelles : "
+                                 + "; ".join(f"{c.get('exp_id')} le {c.get('utc')} ({c['path']})" for c in clash)
+                                 + ". Le test final ne serait plus « jamais vu ». --allow-retest pour forcer (sera tracé).")
         prior = self._prior()
         row = prior[(prior["exp_id"] == exp_id) & (prior["split"] == "DEV")]
         if row.empty:
@@ -394,16 +445,17 @@ class Lab:
             raise SystemExit(f"{exp_id} n'est pas ACCEPT_CANDIDATE ({row.iloc[-1]['decision']}) : "
                              "le test final est réservé aux candidats validés (--force pour passer outre, tracé).")
         spec = self._find_spec(exp_id)
-        dev, test = self.splits.dev, self.splits.test
         windows = [(0, (0, dev[1] - self.splits.embargo), test)]
         trades, fitted = self.walk_forward(spec["strategy"], spec["params"], windows)
         m, extra = self.score(spec, trades, [test], pd.DataFrame(), None)
         decision, checks = ev.decide({**m, "p_null_holm": m["p_null"], "frac_folds_positive": 1.0},
                                      self.cfg["evaluation"], False)
         out = {"exp_id": exp_id, "split": "TEST", "decision": decision, "forced": force, **_round(m)}
-        TEST_ACCESS.parent.mkdir(parents=True, exist_ok=True)
-        TEST_ACCESS.write_text(json.dumps({"exp_id": exp_id, "utc": datetime.now(timezone.utc).isoformat(),
-                                           "data_hash": self.md.data_hash, "forced": force}) + "\n")
+        self.test_access.parent.mkdir(parents=True, exist_ok=True)
+        self.test_access.write_text(json.dumps({
+            "exp_id": exp_id, "utc": datetime.now(timezone.utc).isoformat(), "data_hash": self.md.data_hash,
+            "data_mode": self.mode, "symbol": self.md.symbol, "test_start": test_start, "test_end": test_end,
+            "forced": force, "allow_retest": allow_retest}) + "\n")
         append_result(self.results_path, {**out, "run_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                                           "data_mode": self.mode, "data_hash": self.md.data_hash,
                                           "git_commit": self.commit, "evaluator_hash": self.evaluator_hash,
@@ -421,10 +473,11 @@ class Lab:
         return df
 
     def _find_spec(self, exp_id: str) -> dict:
+        """Pré-enregistrées (config) d'abord, puis expériences proposées sur CE jeu de données."""
         for e in self.cfg["experiments"]:
             if e["id"] == exp_id:
                 return e
-        p = RUNS / exp_id / "summary.json"
+        p = self.run_dir / exp_id / "summary.json"
         if p.exists():
             return json.loads(p.read_text())["experiment"]
         raise KeyError(f"expérience {exp_id} introuvable")
@@ -553,24 +606,39 @@ def results_table(df: pd.DataFrame) -> str:
     return "\n".join(lines)
 
 
+def results_by_dataset(df: pd.DataFrame) -> str:
+    """Un tableau par jeu de données (data_hash), étiqueté DÉMO ou RÉEL, dans l'ordre d'apparition.
+    Un run sur de nouvelles données AJOUTE son tableau : il n'efface jamais celui d'un autre jeu."""
+    if df.empty:
+        return "_aucune expérience_"
+    parts = []
+    for h, g in df.groupby(df["data_hash"].astype(str), sort=False):
+        modes = list(dict.fromkeys(g["data_mode"].astype(str)))
+        demo = any(is_demo_mode(m) for m in modes)
+        parts += [f"#### Jeu de données `{h}` — {'DÉMO' if demo else 'RÉEL'} ({', '.join(modes)})", "",
+                  DEMO_WARNING if demo else REAL_NOTE, "", results_table(g), ""]
+    return "\n".join(parts).strip()
+
+
 def update_docs(lab: Lab, props: list[dict]):
     df = lab._prior()
+    everything = load_results(lab.results_path)
     stamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    warn = ("> **MODE DÉMO — données synthétiques. Aucun chiffre ci-dessous n'est un résultat de marché réel.**\n"
-            if lab.md.is_demo else "> Données historiques réelles.\n")
-    journal = [f"### Journal automatique (mis à jour {stamp})", "", warn,
-               f"Données : `{lab.md.source}` — hash `{lab.md.data_hash}` — "
-               f"{len(lab.bars):,} barres {lab.md.timeframe}", "", results_table(df), ""]
+    journal = [f"### Journal automatique (mis à jour {stamp})", "",
+               f"Dernier run : `{lab.md.source}` — hash `{lab.md.data_hash}` — "
+               f"{len(lab.bars):,} barres {lab.md.timeframe} — {'DÉMO' if lab.md.is_demo else 'RÉEL'}", "",
+               results_by_dataset(everything), ""]
     errs = df[df["decision"] == "ERROR"] if len(df) else df
     if len(errs):
         journal += ["#### Erreurs rencontrées", ""] + [f"- {r.exp_id} : {r.error}" for r in errs.itertuples()] + [""]
-    journal += ["### Prochaines expériences proposées (règles de `propose_next`)", ""]
+    journal += [f"### Prochaines expériences proposées pour le jeu `{lab.md.data_hash}` "
+                "(règles de `propose_next`)", ""]
     for p in props:
         tag = f"`{p['id']}` (auto)" if p.get("auto") else "(manuel / nouveau code)"
         journal.append(f"- {tag} **{p.get('name', p['type'])}** — {p['rationale']}")
     _replace_auto_block(MEMORY, "\n".join(journal))
-    _replace_auto_block(REPORT, "\n".join([f"_Tableau régénéré automatiquement le {stamp}._", "", warn,
-                                           results_table(df)]))
+    _replace_auto_block(REPORT, "\n".join([f"_Tableaux régénérés automatiquement le {stamp}._", "",
+                                           results_by_dataset(everything)]))
 
 
 # =============================================================================
@@ -580,11 +648,8 @@ def calibrate_null(cfg: dict, n_worlds: int) -> int:
     """Rejoue les expériences pré-enregistrées sur N mondes synthétiques SANS aucun
     avantage (graines 1..N). Tout ACCEPT_CANDIDATE serait un faux positif : on mesure
     ainsi le taux d'erreur réel du protocole, au lieu de le supposer."""
-    import contextlib
     import io
-    global RUNS
-    out = ROOT / "runs" / "controls" / "null_worlds"
-    RUNS = out
+    out = ROOT / "runs" / "controls" / "null_worlds"     # artefacts : null_worlds/<data_hash>/<exp_id>/
     rows = []
     for seed in range(1, n_worlds + 1):
         c = json.loads(json.dumps(cfg))
@@ -593,7 +658,8 @@ def calibrate_null(cfg: dict, n_worlds: int) -> int:
         res = out / f"results_seed{seed}.csv"
         res.unlink(missing_ok=True)
         with contextlib.redirect_stdout(io.StringIO()):
-            lab = Lab(c, force_mode="demo", results_path=res, write_docs=False, label_suffix="_NULL_WORLD")
+            lab = Lab(c, force_mode="demo", results_path=res, write_docs=False, label_suffix="_NULL_WORLD",
+                      runs_root=out)
             for e in c["experiments"]:
                 r = lab.run_experiment(dict(e))
                 rows.append({"seed": seed, "exp_id": e["id"], "gross_t_stat": r.get("gross_t_stat"),
@@ -639,10 +705,11 @@ def main(argv=None) -> int:
     results_path, write_docs, mode, suffix = RESULTS, True, args.mode, ""
     if args.control == "positive":
         cfg["data"]["demo"]["planted_edge"] = float(cfg["data"]["demo"].get("positive_control_edge", 0.3))
+        # Journal séparé (n'entre pas dans le budget ni la correction de Holm du labo) ; ses
+        # artefacts vont, comme les autres, dans runs/<data_hash>/ (hash propre au monde planté).
         results_path, write_docs, mode, suffix = RUNS / "controls" / "positive_control.csv", False, "demo", "_POSITIVE_CONTROL"
-        globals()["RUNS"] = ROOT / "runs" / "controls"
-        globals()["TEST_ACCESS"] = ROOT / "runs" / "controls" / "test_access.json"
-    lab = Lab(cfg, force_mode=mode, results_path=results_path, write_docs=write_docs, label_suffix=suffix)
+    lab = Lab(cfg, force_mode=mode, results_path=results_path, write_docs=write_docs, label_suffix=suffix,
+              runs_root=RUNS)
 
     if args.final_test:
         lab.final_test(args.final_test, args.force, args.allow_retest)

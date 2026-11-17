@@ -17,7 +17,7 @@ comme on teste des hypothèses scientifiques : on cherche à **réfuter**, pas �
 cd quantlab
 python3 -m venv .venv && source .venv/bin/activate     # Python 3.10+ (3.11 recommandé)
 pip install -r requirements.txt
-python -m pytest -q                                    # 15 tests doivent passer
+python -m pytest -q                                    # 19 tests doivent passer
 python experiment_runner.py                            # expériences pré-enregistrées (budget 10)
 ```
 
@@ -51,7 +51,7 @@ research_config.yaml ──► data_loader.py ──► features.py ──► st
                                                                               ▼
  research_memory.md ◄── experiment_runner.py ◄── evaluation.py ◄── backtest.py
  report.md, results.csv   (boucle budgétée,       🔒 protégé :      🔒 protégé :
- runs/<id>/summary.json    walk-forward,          métriques, tests,  exécution t+1,
+ runs/<hash>/<id>/*.json   walk-forward,          métriques, tests,  exécution t+1,
                            propositions)          décision           coûts, refus des trous
 ```
 
@@ -81,8 +81,15 @@ python experiment_runner.py --control positive  # contrôle positif : le labo vo
 python experiment_runner.py --calibrate-null 10 # contrôle négatif : taux de faux positifs
 python experiment_runner.py --final-test E02    # TEST FINAL, une seule fois, candidats acceptés seulement
 python experiment_runner.py --relock "raison"   # (humain) re-verrouille l'évaluateur après relecture
-python figures.py                               # régénère les figures
+python figures.py                               # figures : runs/<data_hash>/fig_*.png (--mode real|demo)
 ```
+
+**Où sont les résultats.** Chaque jeu de données (identifié par son hash `data_hash`, affiché au
+lancement) a son dossier : `runs/<data_hash>/<exp_id>/summary.json` (+ `trades.csv`, non versionné)
+et `runs/<data_hash>/test_access.json`. Un run sur de nouvelles données n'écrase donc jamais ceux
+d'un autre jeu. `results.csv` reste le journal unique (colonne `data_hash`). Mondes démo :
+`636e8307230d031c` (monde nul), `9b676b54c4a5ed3d` (contrôle positif), `runs/controls/null_worlds/<hash>/`
+(calibration ; seuls les artefacts du dernier monde, graine 10, sont conservés).
 
 ## 5. Le cycle d'une expérience (et où il vit dans le code)
 
