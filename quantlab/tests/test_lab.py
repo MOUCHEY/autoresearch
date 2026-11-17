@@ -302,3 +302,49 @@ def test_figures_and_docs_keep_demo_and_real_apart(tmp_path):
     assert "`demohash` — DÉMO" in demo_part and er.DEMO_WARNING in demo_part and "-1.800" in demo_part
     assert "— RÉEL" in real_part and er.REAL_NOTE in real_part and er.DEMO_WARNING not in real_part
     assert "0.400" in real_part and "-1.800" not in real_part
+
+
+def test_fetch_resumes_day_by_day_without_refetching(tmp_path, monkeypatch):
+    """Une panne en plein mois ne doit perdre que le fichier en cours : la relance reprend au jour
+    suivant sans retélécharger, et un jour sans cotation (404) n'est demandé qu'une fois."""
+    import data_loader as dl
+    rec = np.array([(60, 2045123, 2046000, 2044000, 2045500, 2.0), (120, 2045500, 2046000, 2045000, 2045800, 1.0)],
+                   dtype=[("t", ">u4"), ("p1", ">u4"), ("p2", ">u4"), ("p3", ">u4"), ("p4", ">u4"), ("v", ">f4")])
+    blob = lzma.compress(rec.tobytes(), format=lzma.FORMAT_ALONE)
+    calls, fail_at = [], {5}
+
+    def fake_get(url, retries=6):
+        calls.append(url)
+        if len(calls) in fail_at:
+            raise ConnectionError("panne simulée")
+        return None if "/2024/00/01/" in url else blob          # 1er janvier : pas de cotation
+    monkeypatch.setattr(dl, "_http_get", fake_get)
+    out = tmp_path / "XAUUSD_M1.csv"
+    with pytest.raises(ConnectionError):
+        dl.fetch_dukascopy("XAUUSD", "2024-01-01", "2024-01-03", out, pause_s=0)
+    assert len(calls) == 5                     # 01/01 BID+ASK (404), 02/01 BID+ASK, panne sur 03/01 BID
+    fail_at.clear()
+    dl.fetch_dukascopy("XAUUSD", "2024-01-01", "2024-01-03", out, pause_s=0)
+    assert [u.split("/datafeed/XAUUSD/")[1] for u in calls[5:]] == [
+        "2024/00/03/BID_candles_min_1.bi5", "2024/00/03/ASK_candles_min_1.bi5"]
+    df = pd.read_csv(out)
+    assert list(df["time"]) == ["2024-01-02 00:01:00+00:00", "2024-01-02 00:02:00+00:00",
+                                "2024-01-03 00:01:00+00:00", "2024-01-03 00:02:00+00:00"]
+    n = len(calls)
+    dl.fetch_dukascopy("XAUUSD", "2024-01-01", "2024-01-03", out, pause_s=0)
+    assert len(calls) == n                     # tout est en cache : aucune requête
+
+
+def test_http_get_reports_cause_after_retries(monkeypatch):
+    """Après des pannes réseau répétées, l'erreur finale doit dire POURQUOI (pas seulement « échec »)."""
+    import urllib.error
+    import data_loader as dl
+    waits = []
+
+    def fake_urlopen(req, timeout=30):
+        raise urllib.error.URLError(TimeoutError("timed out"))
+    monkeypatch.setattr(dl.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(dl.time, "sleep", waits.append)
+    with pytest.raises(ConnectionError, match="URLError: timed out"):
+        dl._http_get("https://example.invalid/x.bi5")
+    assert waits == [30, 60, 120, 240, 480]

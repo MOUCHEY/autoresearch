@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
 import io
 import lzma
 import sys
@@ -387,9 +388,15 @@ class DataSourceRefused(RuntimeError):
     """Le fournisseur refuse le téléchargement automatisé : on s'arrête au lieu d'insister."""
 
 
-def _http_get(url: str, retries: int = 4) -> bytes | None:
+def _http_get(url: str, retries: int = 6) -> bytes | None:
     """GET poli : 404 = pas de données ce jour-là ; 429 = refus explicite -> arrêt immédiat ;
-    503 / erreurs réseau = attente longue (Retry-After si fourni, sinon 30 s, 60 s, 120 s...)."""
+    503 / erreurs réseau = attente longue et croissante (Retry-After si fourni, sinon 30, 60, 120,
+    240, 480 s : environ 15 min de patience pour une panne passagère, une seule requête à la fois).
+
+    La cause de chaque échec est affichée et reprise dans l'erreur finale : un journal qui dit
+    seulement « échec » ne distingue pas une panne passagère d'un refus (constaté le 2026-11-18 :
+    connexions TCP impossibles pendant plusieurs minutes, sans aucun code HTTP)."""
+    last = "cause inconnue"
     for k in range(retries):
         wait = 30 * 2 ** k
         try:
@@ -406,20 +413,44 @@ def _http_get(url: str, retries: int = 4) -> bytes | None:
                     "Dukascopy oriente désormais l'accès automatisé en masse vers un stockage S3 « Requester "
                     "Pays » (frais AWS à ta charge) : https://wiki.dukascopy.com/en/development/data-export/ . "
                     "Ne pas insister ; utiliser un export MT5 ou décider explicitement de la voie S3.") from e
+            last = f"HTTP {e.code}"
             ra = e.headers.get("Retry-After") if e.headers else None
             if ra and ra.isdigit():
                 wait = max(wait, int(ra))
-        except (urllib.error.URLError, TimeoutError, ConnectionError):
-            pass
+        except (urllib.error.URLError, OSError, http.client.HTTPException) as e:
+            last = f"{type(e).__name__}: {getattr(e, 'reason', e)}"
         if k < retries - 1:
+            print(f"    [{time.strftime('%H:%M:%S')}] {last} — {url.split('/datafeed/')[-1]} "
+                  f"— nouvel essai dans {wait} s", flush=True)
             time.sleep(wait)
-    raise ConnectionError(f"échec du téléchargement après {retries} essais : {url}")
+    raise ConnectionError(f"échec du téléchargement après {retries} essais ({last}) : {url}")
+
+
+def _cached_get(url: str, path: Path) -> tuple[bytes | None, bool]:
+    """Télécharge un fichier UNE seule fois et le garde (octets bruts, écriture atomique).
+    Un 404 (jour sans cotation) est mémorisé par un fichier `.absent`. Retourne (octets, requête_faite)."""
+    absent = path.with_suffix(".absent")
+    if path.exists():
+        return path.read_bytes(), False
+    if absent.exists():
+        return None, False
+    blob = _http_get(url)
+    if blob is None:
+        absent.touch()
+    else:
+        tmp = path.with_suffix(".part")
+        tmp.write_bytes(blob)
+        tmp.replace(path)
+    return blob, True
 
 
 def fetch_dukascopy(symbol: str, start: str, end: str, out_path: Path, pause_s: float = 1.0) -> Path:
     """Télécharge les bougies M1 BID et ASK, en déduit prix médian et spread, écrit un CSV.
 
-    Reprise possible : un cache mensuel est conservé dans data/dukascopy/{symbol}/.
+    Reprise possible à tout moment : chaque fichier journalier est gardé tel quel dans
+    data/dukascopy/{symbol}/days/ (une interruption ne perd au plus qu'un fichier), et chaque mois
+    terminé dans data/dukascopy/{symbol}/{AAAA-MM}.csv. Relancer la même commande reprend là où
+    elle s'est arrêtée, sans retélécharger.
     Respecte le serveur (requêtes séquentielles, 1 s entre deux requêtes, arrêt net sur 429).
     ATTENTION (constaté le 2026-11-08) : depuis un serveur cloud, datafeed.dukascopy.com a
     répondu 429 puis 503, en renvoyant vers un accès S3 « Requester Pays » (payant, compte
@@ -429,7 +460,8 @@ def fetch_dukascopy(symbol: str, start: str, end: str, out_path: Path, pause_s: 
     if divisor is None:
         raise ValueError(f"diviseur de prix inconnu pour {symbol} : ajoute-le à PRICE_DIVISOR")
     cache = out_path.parent / "dukascopy" / symbol
-    cache.mkdir(parents=True, exist_ok=True)
+    days_dir = cache / "days"
+    days_dir.mkdir(parents=True, exist_ok=True)
     months = pd.period_range(start, end, freq="M")
     for m in months:
         mfile = cache / f"{m}.csv"
@@ -444,8 +476,9 @@ def fetch_dukascopy(symbol: str, start: str, end: str, out_path: Path, pause_s: 
             for side in ("BID", "ASK"):
                 url = (f"https://datafeed.dukascopy.com/datafeed/{symbol}/{day.year}/"
                        f"{day.month - 1:02d}/{day.day:02d}/{side}_candles_min_1.bi5")
-                blob = _http_get(url)
-                time.sleep(pause_s)
+                blob, fetched = _cached_get(url, days_dir / f"{day:%Y-%m-%d}_{side}.bi5")
+                if fetched:
+                    time.sleep(pause_s)
                 if blob:
                     sides[side] = decode_bi5_candles(blob, day.normalize(), divisor)
             if len(sides) == 2 and len(sides["BID"]):
@@ -458,7 +491,7 @@ def fetch_dukascopy(symbol: str, start: str, end: str, out_path: Path, pause_s: 
                 parts.append(mid[b["volume"] > 0])
         dfm = pd.concat(parts) if parts else pd.DataFrame(columns=OHLC + ["volume", "spread"])
         dfm.to_csv(mfile, index_label="time")
-        print(f"  {symbol} {m}: {len(dfm)} barres M1", flush=True)
+        print(f"  [{time.strftime('%H:%M:%S')}] {symbol} {m}: {len(dfm)} barres M1", flush=True)
     allm = [pd.read_csv(cache / f"{m}.csv") for m in months if (cache / f"{m}.csv").exists()]
     full = pd.concat(allm, ignore_index=True).drop_duplicates("time").sort_values("time")
     full.to_csv(out_path, index=False)
